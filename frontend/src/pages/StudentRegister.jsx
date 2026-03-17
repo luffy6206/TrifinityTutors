@@ -13,9 +13,26 @@ function StudentRegister() {
     setForm({ ...form, [e.target.name]: e.target.value })
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log(form)
+
+    await fetch("http://localhost:5000/api/student",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body: JSON.stringify(form)
+    })
+
+    alert("Student request submitted")
+
+    // reset form
+    setForm({
+      name:"",
+      class:"",
+      subject:"",
+      locality:""
+    })
   }
 
   return (
@@ -23,19 +40,41 @@ function StudentRegister() {
       <h2>Student Registration</h2>
 
       <form onSubmit={handleSubmit}>
-        <input name="name" placeholder="Name" onChange={handleChange} />
+
+        <input
+          name="name"
+          value={form.name}
+          placeholder="Name"
+          onChange={handleChange}
+        />
         <br /><br />
 
-        <input name="class" placeholder="Class" onChange={handleChange} />
+        <input
+          name="class"
+          value={form.class}
+          placeholder="Class"
+          onChange={handleChange}
+        />
         <br /><br />
 
-        <input name="subject" placeholder="Subject" onChange={handleChange} />
+        <input
+          name="subject"
+          value={form.subject}
+          placeholder="Subject"
+          onChange={handleChange}
+        />
         <br /><br />
 
-        <input name="locality" placeholder="Locality" onChange={handleChange} />
+        <input
+          name="locality"
+          value={form.locality}
+          placeholder="Locality"
+          onChange={handleChange}
+        />
         <br /><br />
 
         <button type="submit">Submit</button>
+
       </form>
     </div>
   )
