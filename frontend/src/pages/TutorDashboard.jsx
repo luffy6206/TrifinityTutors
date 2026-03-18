@@ -1,21 +1,16 @@
+import { useEffect, useState } from "react"
 import StudentCard from "../components/StudentCard"
 
 function TutorDashboard() {
 
-  const studentRequests = [
-    {
-      class: "10",
-      subject: "Maths",
-      locality: "Wakad",
-      time: "Evening"
-    },
-    {
-      class: "8",
-      subject: "Science",
-      locality: "Baner",
-      time: "Morning"
-    }
-  ]
+  const [studentRequests, setStudentRequests] = useState([])
+
+  useEffect(() => {
+    fetch("http://localhost:5000/api/studentrequests")
+      .then(res => res.json())
+      .then(data => setStudentRequests(data))
+      .catch(err => console.error(err))
+  }, [])
 
   return (
     <div className="p-10 bg-gray-100 min-h-screen">
@@ -26,8 +21,8 @@ function TutorDashboard() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-        {studentRequests.map((req, index) => (
-          <StudentCard key={index} data={req} />
+        {studentRequests.map((req) => (
+          <StudentCard key={req._id} data={req} />
         ))}
 
       </div>
