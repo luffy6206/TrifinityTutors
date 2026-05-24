@@ -4,6 +4,8 @@ import Home from "./pages/Home"
 import StudentRegister from "./pages/StudentRegister"
 import TutorRegister from "./pages/TutorRegister"
 import TutorDashboard from "./pages/TutorDashboard"
+import StudentDashboard from "./pages/StudentDashboard"
+import Auth from "./pages/Auth"
 
 import Login from "./admin/pages/Login";
 import Dashboard from "./admin/pages/Dashboard";
@@ -40,6 +42,10 @@ function App() {
           </PublicRoute>
         } />
 
+        <Route path="/auth" element={
+          <Auth />
+        } />
+
         <Route path="/student-register" element={
           <MainLayout>
             <StudentRegister />
@@ -67,6 +73,12 @@ function App() {
           <MainLayout>
             <TutorDashboard />
           </MainLayout>
+        } />
+
+        <Route path="/student-dashboard" element={
+          <ProtectedRoute>
+            <StudentDashboard />
+          </ProtectedRoute>
         } />
 
         <Route path="/my-applications" element={
