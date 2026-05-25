@@ -6,6 +6,7 @@ import TutorRegister from "./pages/TutorRegister"
 import TutorDashboard from "./pages/TutorDashboard"
 import StudentDashboard from "./pages/StudentDashboard"
 import AdminDashboard from "./pages/AdminDashboard"
+import Tutors from "./pages/Tutors"
 import Auth from "./pages/Auth"
 import SignupPage from "./pages/SignupPage"
 import LoginPage from "./pages/LoginPage"
@@ -108,6 +109,10 @@ function App() {
           <MainLayout>
             <MyApplications />
           </MainLayout>
+        } />
+
+        <Route path="/tutors" element={
+          <Tutors />
         } />
 
         {/* LOGIN (NO NAVBAR) */}

@@ -145,11 +145,11 @@ function Home() {
 
                 {/* CTA Buttons */}
                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-8 sm:mb-12">
-                  <Link to="/student-register" className="group relative px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg sm:rounded-xl font-bold text-base sm:text-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 text-center">
+                  <Link to="/tutors" className="group relative px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg sm:rounded-xl font-bold text-base sm:text-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 text-center">
                     🔍 Find a Tutor
                     <span className="absolute inset-0 rounded-lg sm:rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 opacity-0 group-hover:opacity-100 blur transition-opacity duration-300 -z-10"></span>
                   </Link>
-                  <Link to="/tutor-login" className="px-6 sm:px-8 py-3 sm:py-4 bg-gray-100 text-gray-900 rounded-lg sm:rounded-xl font-bold text-base sm:text-lg hover:bg-gray-200 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 text-center">
+                  <Link to="/register-tutor" className="px-6 sm:px-8 py-3 sm:py-4 bg-gray-100 text-gray-900 rounded-lg sm:rounded-xl font-bold text-base sm:text-lg hover:bg-gray-200 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 text-center">
                     👨‍🏫 Become a Tutor
                   </Link>
                 </div>
@@ -247,7 +247,7 @@ function Home() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {popularSubjects.map((subject) => (
-              <Link key={subject.id} to="/student-register" className="group">
+              <Link key={subject.id} to="/tutors" className="group">
                 <div className="bg-white rounded-xl sm:rounded-2xl p-6 sm:p-8 shadow-md hover:shadow-2xl transition-all duration-300 cursor-pointer hover:-translate-y-2 h-full">
                   <div className="text-5xl sm:text-6xl mb-4">{subject.icon}</div>
                   <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">{subject.name}</h3>
@@ -297,7 +297,7 @@ function Home() {
                   <p className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">{tutor.price}</p>
 
                   {/* CTA */}
-                  <Link to="/student-register" className="block w-full px-4 py-2 sm:py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg sm:rounded-lg font-bold hover:shadow-lg transition-all duration-300 text-center text-sm sm:text-base mt-auto">
+                  <Link to="/tutors" className="block w-full px-4 py-2 sm:py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg sm:rounded-lg font-bold hover:shadow-lg transition-all duration-300 text-center text-sm sm:text-base mt-auto">
                     Book Now
                   </Link>
                 </div>
@@ -306,7 +306,7 @@ function Home() {
           </div>
 
           <div className="text-center mt-10 sm:mt-12">
-            <Link to="/student-register" className="inline-block px-6 sm:px-8 py-3 sm:py-4 border-2 border-blue-600 text-blue-600 font-bold rounded-lg sm:rounded-xl hover:bg-blue-50 transition-all duration-300 text-sm sm:text-base">
+            <Link to="/tutors" className="inline-block px-6 sm:px-8 py-3 sm:py-4 border-2 border-blue-600 text-blue-600 font-bold rounded-lg sm:rounded-xl hover:bg-blue-50 transition-all duration-300 text-sm sm:text-base">
               View All Tutors →
             </Link>
           </div>
@@ -395,10 +395,10 @@ function Home() {
           <p className="text-base sm:text-lg lg:text-xl text-blue-100 mb-6 sm:mb-8 max-w-2xl mx-auto">Join thousands of students who have improved their grades and confidence with our verified tutors.</p>
 
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-            <Link to="/student-register" className="px-6 sm:px-8 py-3 sm:py-4 bg-white text-blue-600 rounded-lg sm:rounded-xl font-bold hover:shadow-xl transition-all duration-300 hover:-translate-y-1 text-sm sm:text-base text-center">
+            <Link to="/tutors" className="px-6 sm:px-8 py-3 sm:py-4 bg-white text-blue-600 rounded-lg sm:rounded-xl font-bold hover:shadow-xl transition-all duration-300 hover:-translate-y-1 text-sm sm:text-base text-center">
               Start Learning Today
             </Link>
-            <Link to="/tutor-login" className="px-6 sm:px-8 py-3 sm:py-4 bg-blue-500 text-white rounded-lg sm:rounded-xl font-bold hover:bg-blue-400 transition-all duration-300 hover:-translate-y-1 text-sm sm:text-base text-center">
+            <Link to="/tutor-register" className="px-6 sm:px-8 py-3 sm:py-4 bg-blue-500 text-white rounded-lg sm:rounded-xl font-bold hover:bg-blue-400 transition-all duration-300 hover:-translate-y-1 text-sm sm:text-base text-center">
               Join as a Tutor
             </Link>
           </div>
@@ -424,17 +424,17 @@ function Home() {
             <div>
               <h4 className="font-bold text-white mb-4 text-sm sm:text-base">For Students</h4>
               <ul className="space-y-2 text-xs sm:text-sm">
-                <li><Link to="/student-register" className="hover:text-white transition-colors">Find a Tutor</Link></li>
-                <li><Link to="/student-register" className="hover:text-white transition-colors">How It Works</Link></li>
-                <li><Link to="/student-register" className="hover:text-white transition-colors">Subjects</Link></li>
+                <li><Link to="/tutors" className="hover:text-white transition-colors">Find a Tutor</Link></li>
+                <li><Link to="/tutors" className="hover:text-white transition-colors">How It Works</Link></li>
+                <li><Link to="/tutors" className="hover:text-white transition-colors">Subjects</Link></li>
               </ul>
             </div>
 
             <div>
               <h4 className="font-bold text-white mb-4 text-sm sm:text-base">For Tutors</h4>
               <ul className="space-y-2 text-xs sm:text-sm">
-                <li><Link to="/tutor-login" className="hover:text-white transition-colors">Become a Tutor</Link></li>
-                <li><Link to="/tutor-login" className="hover:text-white transition-colors">Tutor Benefits</Link></li>
+                <li><Link to="/tutor-register" className="hover:text-white transition-colors">Become a Tutor</Link></li>
+                <li><Link to="/tutor-register" className="hover:text-white transition-colors">Tutor Benefits</Link></li>
                 <li><Link to="/tutor-login" className="hover:text-white transition-colors">Sign In</Link></li>
               </ul>
             </div>

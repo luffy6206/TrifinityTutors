@@ -5,8 +5,8 @@ import { useState } from "react";
 const links = [
   { to: "/tutors", label: "Find Tutors" },
   { to: "/register-tutor", label: "Become a Tutor" },
-  { to: "/dashboard/student", label: "Student" },
-  { to: "/dashboard/tutor", label: "Tutor" },
+  { to: "/auth/login", label: "Student" },
+  { to: "/tutor-login", label: "Tutor" },
   { to: "/admin-login", label: "Admin" },
 ];
 

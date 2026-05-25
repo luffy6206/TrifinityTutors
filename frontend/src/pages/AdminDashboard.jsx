@@ -1,4 +1,5 @@
-import { LayoutDashboard, Users, GraduationCap, DollarSign, Flag, Settings, FileBarChart, TrendingUp, MoreHorizontal, Search } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { LayoutDashboard, Users, GraduationCap, DollarSign, Flag, Settings, FileBarChart, TrendingUp, MoreHorizontal, Search, ChevronDown, X } from "lucide-react";
 import { DashboardShell, StatCard } from "@/components/DashboardShell";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,51 @@ const users = [
 ];
 
 function AdminDashboard() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [roleFilter, setRoleFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [showRoleDropdown, setShowRoleDropdown] = useState(false);
+  const [showStatusDropdown, setShowStatusDropdown] = useState(false);
+  const filterRef = useRef(null);
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (filterRef.current && !filterRef.current.contains(event.target)) {
+        setShowRoleDropdown(false);
+        setShowStatusDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Filter users based on search and filters
+  const filteredUsers = users.filter((user) => {
+    const matchesSearch = searchTerm === "" || 
+      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesRole = roleFilter === "" || user.role === roleFilter;
+    const matchesStatus = statusFilter === "" || user.status === statusFilter;
+    
+    return matchesSearch && matchesRole && matchesStatus;
+  });
+
+  const handleApplyFilters = () => {
+    // Filters are applied automatically via the filteredUsers calculation
+    // This function can be used for additional actions if needed
+    setShowRoleDropdown(false);
+    setShowStatusDropdown(false);
+  };
+
+  const handleClearFilters = () => {
+    setSearchTerm("");
+    setRoleFilter("");
+    setStatusFilter("");
+  };
+
   return (
     <DashboardShell navItems={nav} title="Admin Overview" role="Admin">
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -75,13 +121,88 @@ function AdminDashboard() {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-5">
           <div>
             <h2 className="font-display font-semibold">User management</h2>
-            <p className="text-xs text-muted-foreground">Manage all platform users</p>
+            <p className="text-xs text-muted-foreground">Manage all platform users ({filteredUsers.length})</p>
           </div>
-          <div className="flex gap-2">
-            <div className="flex items-center gap-2 px-3 rounded-xl bg-muted/60 w-64">
+          <div className="flex gap-2 flex-wrap" ref={filterRef}>
+            <div className="flex items-center gap-2 px-3 rounded-xl bg-muted/60 flex-grow sm:flex-grow-0 sm:w-64">
               <Search className="h-4 w-4 text-muted-foreground" />
-              <Input className="border-0 bg-transparent shadow-none focus-visible:ring-0 px-0 h-9" placeholder="Search users..." />
+              <Input 
+                className="border-0 bg-transparent shadow-none focus-visible:ring-0 px-0 h-9" 
+                placeholder="Search users..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
             </div>
+            
+            {/* Role Filter Dropdown */}
+            <div className="relative">
+              <button 
+                onClick={() => setShowRoleDropdown(!showRoleDropdown)}
+                className="flex items-center gap-2 px-3 h-9 rounded-xl bg-muted/60 hover:bg-muted/80 transition-colors text-sm font-medium"
+              >
+                Role {roleFilter && `(${roleFilter})`}
+                <ChevronDown className="h-4 w-4" />
+              </button>
+              {showRoleDropdown && (
+                <div className="absolute right-0 mt-2 w-40 bg-card border border-border rounded-lg shadow-lg z-10">
+                  {["Tutor", "Student"].map((role) => (
+                    <button
+                      key={role}
+                      onClick={() => {
+                        setRoleFilter(roleFilter === role ? "" : role);
+                        setShowRoleDropdown(false);
+                      }}
+                      className={`w-full text-left px-4 py-2.5 text-sm hover:bg-accent transition-colors ${
+                        roleFilter === role ? "bg-accent font-medium" : ""
+                      }`}
+                    >
+                      {role}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Status Filter Dropdown */}
+            <div className="relative">
+              <button 
+                onClick={() => setShowStatusDropdown(!showStatusDropdown)}
+                className="flex items-center gap-2 px-3 h-9 rounded-xl bg-muted/60 hover:bg-muted/80 transition-colors text-sm font-medium"
+              >
+                Status {statusFilter && `(${statusFilter})`}
+                <ChevronDown className="h-4 w-4" />
+              </button>
+              {showStatusDropdown && (
+                <div className="absolute right-0 mt-2 w-40 bg-card border border-border rounded-lg shadow-lg z-10">
+                  {["Active", "Pending", "Suspended"].map((status) => (
+                    <button
+                      key={status}
+                      onClick={() => {
+                        setStatusFilter(statusFilter === status ? "" : status);
+                        setShowStatusDropdown(false);
+                      }}
+                      className={`w-full text-left px-4 py-2.5 text-sm hover:bg-accent transition-colors ${
+                        statusFilter === status ? "bg-accent font-medium" : ""
+                      }`}
+                    >
+                      {status}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Apply and Clear Buttons */}
+            <Button onClick={handleApplyFilters} className="bg-gradient-primary shadow-glow">Apply</Button>
+            {(searchTerm || roleFilter || statusFilter) && (
+              <Button 
+                onClick={handleClearFilters}
+                variant="outline"
+                className="text-destructive hover:bg-destructive/10"
+              >
+                Clear <X className="h-4 w-4 ml-1" />
+              </Button>
+            )}
             <Button className="bg-gradient-primary shadow-glow">Add User</Button>
           </div>
         </div>
@@ -97,35 +218,43 @@ function AdminDashboard() {
               </tr>
             </thead>
             <tbody>
-              {users.map((u, i) => (
-                <tr key={i} className="border-b border-border last:border-0 hover:bg-accent/30">
-                  <td className="py-4 pr-4">
-                    <div className="flex items-center gap-3">
-                      <div className={`h-9 w-9 rounded-full bg-gradient-to-br ${u.color}`} />
-                      <div>
-                        <div className="font-medium">{u.name}</div>
-                        <div className="text-xs text-muted-foreground">{u.email}</div>
+              {filteredUsers.length > 0 ? (
+                filteredUsers.map((u, i) => (
+                  <tr key={i} className="border-b border-border last:border-0 hover:bg-accent/30">
+                    <td className="py-4 pr-4">
+                      <div className="flex items-center gap-3">
+                        <div className={`h-9 w-9 rounded-full bg-gradient-to-br ${u.color}`} />
+                        <div>
+                          <div className="font-medium">{u.name}</div>
+                          <div className="text-xs text-muted-foreground">{u.email}</div>
+                        </div>
                       </div>
-                    </div>
-                  </td>
-                  <td className="py-4 pr-4">
-                    <Badge variant="secondary">{u.role}</Badge>
-                  </td>
-                  <td className="py-4 pr-4">
-                    <Badge className={
-                      u.status === "Active" ? "bg-success/15 text-success border-0" :
-                      u.status === "Pending" ? "bg-warning/15 text-warning-foreground border-0" :
-                      "bg-destructive/15 text-destructive border-0"
-                    }>{u.status}</Badge>
-                  </td>
-                  <td className="py-4 pr-4 text-muted-foreground">{u.joined}</td>
-                  <td className="py-4 pr-4 text-right">
-                    <button className="grid h-8 w-8 place-items-center rounded-lg hover:bg-accent">
-                      <MoreHorizontal className="h-4 w-4" />
-                    </button>
+                    </td>
+                    <td className="py-4 pr-4">
+                      <Badge variant="secondary">{u.role}</Badge>
+                    </td>
+                    <td className="py-4 pr-4">
+                      <Badge className={
+                        u.status === "Active" ? "bg-success/15 text-success border-0" :
+                        u.status === "Pending" ? "bg-warning/15 text-warning-foreground border-0" :
+                        "bg-destructive/15 text-destructive border-0"
+                      }>{u.status}</Badge>
+                    </td>
+                    <td className="py-4 pr-4 text-muted-foreground">{u.joined}</td>
+                    <td className="py-4 pr-4 text-right">
+                      <button className="grid h-8 w-8 place-items-center rounded-lg hover:bg-accent">
+                        <MoreHorizontal className="h-4 w-4" />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="5" className="py-8 text-center text-muted-foreground">
+                    No users found matching your criteria
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
