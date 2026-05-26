@@ -8,6 +8,17 @@ export function DashboardShell({ children, navItems, title, role }) {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const tutorData = React.useMemo(() => {
+    try {
+      return JSON.parse(localStorage.getItem("tutor")) || {};
+    } catch {
+      return {};
+    }
+  }, []);
+
+  const tutorName = tutorData?.name || tutorData?.fullName || "Tutor";
+  const greeting = `Welcome back${tutorName ? `, ${tutorName}` : ""}`;
+
   const handleLogout = () => {
     // Clear localStorage
     localStorage.removeItem("token");
@@ -32,16 +43,32 @@ export function DashboardShell({ children, navItems, title, role }) {
             <p className="px-3 py-2 text-xs uppercase tracking-wider text-gray-500">{role}</p>
             <nav className="space-y-1">
               {navItems.map(n => {
-                const active = location.pathname === n.to;
+                const active = n.activeWhen ? location.pathname === n.activeWhen : location.pathname === n.to;
+                const itemClass = `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
+                  active
+                    ? "bg-blue-600 text-white"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`;
+
+                if (n.stayOnDashboard) {
+                  return (
+                    <button
+                      key={`${n.label}-${n.to}`}
+                      type="button"
+                      onClick={() => navigate(n.to)}
+                      className={itemClass}
+                    >
+                      <n.icon className="h-4 w-4" />
+                      {n.label}
+                    </button>
+                  );
+                }
+
                 return (
                   <Link
                     key={n.to}
                     to={n.to}
-                    className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
-                      active
-                        ? "bg-blue-600 text-white"
-                        : "text-gray-700 hover:bg-gray-100"
-                    }`}
+                    className={itemClass}
                   >
                     <n.icon className="h-4 w-4" />
                     {n.label}
@@ -54,7 +81,7 @@ export function DashboardShell({ children, navItems, title, role }) {
             <div className="flex items-center gap-3">
               <div className="h-9 w-9 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500" />
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-semibold truncate">Ananya R.</div>
+                <div className="text-sm font-semibold truncate">{tutorName}</div>
                 <div className="text-xs text-gray-500 truncate">{role}</div>
               </div>
               <button 
@@ -70,17 +97,20 @@ export function DashboardShell({ children, navItems, title, role }) {
 
         <div className="flex-1 min-w-0">
           <header className="sticky top-0 z-30 bg-white border-b border-gray-200">
-            <div className="flex h-16 items-center gap-4 px-4 sm:px-8">
-              <h1 className="text-lg font-semibold flex-1 truncate text-gray-900">{title}</h1>
-              <div className="hidden md:flex items-center gap-2 w-72 px-3 rounded-xl bg-gray-100">
-                <Search className="h-4 w-4 text-gray-500" />
-                <Input className="border-0 bg-transparent shadow-none focus-visible:ring-0 px-0 h-10" placeholder="Search..." />
+            <div className="flex h-20 flex-col justify-center gap-3 px-4 sm:px-8">
+              <div className="flex items-center gap-4">
+                <h1 className="text-lg font-semibold flex-1 truncate text-gray-900">{title}</h1>
+                <div className="hidden md:flex items-center gap-2 w-72 px-3 rounded-xl bg-gray-100">
+                  <Search className="h-4 w-4 text-gray-500" />
+                  <Input className="border-0 bg-transparent shadow-none focus-visible:ring-0 px-0 h-10" placeholder="Search..." />
+                </div>
+                <Button variant="ghost" size="icon" className="relative">
+                  <Bell className="h-5 w-5" />
+                  <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-red-500" />
+                </Button>
+                <div className="h-9 w-9 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500" />
               </div>
-              <Button variant="ghost" size="icon" className="relative">
-                <Bell className="h-5 w-5" />
-                <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-red-500" />
-              </Button>
-              <div className="h-9 w-9 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500" />
+              <p className="text-sm text-gray-600">{greeting}</p>
             </div>
           </header>
           <main className="p-4 sm:p-8 max-w-7xl">{children}</main>
