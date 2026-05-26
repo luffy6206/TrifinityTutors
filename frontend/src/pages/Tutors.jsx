@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Search, MapPin, Star, Heart, ArrowRight, Filter, SlidersHorizontal } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
@@ -15,23 +15,46 @@ const gradients = [
   "from-cyan-400 to-blue-500",
 ];
 
-const tutors = Array.from({ length: 9 }).map((_, i) => ({
-  id: i + 1,
-  name: ["Ananya Rao", "Rahul Verma", "Sara Iqbal", "Daniel Cohen", "Mei Lin", "Kabir Singh", "Amelia Brown", "Jonas Müller", "Aisha Patel"][i],
-  subject: ["Mathematics", "Physics", "English Lit", "Computer Science", "Chemistry", "Calculus", "Biology", "Economics", "Spanish"][i],
-  tags: [["Algebra", "Calculus"], ["Mechanics", "Waves"], ["Essays", "Grammar"], ["Python", "DSA"], ["Organic", "Inorganic"], ["AP", "SAT"], ["Cell Bio", "Genetics"], ["Micro", "Macro"], ["A1-C2", "Conversation"]][i],
-  rating: (4.6 + (i % 5) * 0.08).toFixed(2),
-  reviews: 80 + i * 23,
-  price: 18 + i * 4,
-  exp: 2 + (i % 6),
-  location: ["Bangalore", "Mumbai", "Delhi", "Remote", "Hyderabad", "Pune", "Online", "Online", "Chennai"][i],
-  grad: gradients[i % gradients.length],
-}));
-
 const subjectList = ["Mathematics", "Physics", "Chemistry", "Biology", "Computer Science", "English", "Economics", "Languages"];
 
 function Tutors() {
-  const [price, setPrice] = useState([50]);
+  const [price, setPrice] = useState(100);
+  const [tutors, setTutors] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    async function fetchTutors() {
+      try {
+        const response = await fetch("http://localhost:5000/api/tutors");
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || "Unable to fetch tutors");
+        }
+
+        setTutors(data.map((t, index) => ({
+          ...t,
+          id: t._id || index,
+          subject: t.subject || (t.subjects?.[0] || "Tutor"),
+          tags: t.subjects?.slice(0, 3) || [t.subject || "Tutoring"],
+          rating: t.rating?.toFixed(2) || "4.95",
+          reviews: t.reviews || 0,
+          price: t.hourlyRate || 0,
+          exp: t.experience || 0,
+          location: t.locality || "Remote",
+          grad: gradients[index % gradients.length],
+        })));
+      } catch (fetchError) {
+        console.error(fetchError);
+        setError(fetchError.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchTutors();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -40,7 +63,7 @@ function Tutors() {
       <div className="border-b border-gray-200 bg-gradient-to-br from-blue-50 via-white to-blue-50">
         <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
           <h1 className="text-3xl font-bold sm:text-4xl text-gray-900">Find your perfect tutor</h1>
-          <p className="mt-2 text-gray-600">2,800+ verified tutors ready to help you succeed.</p>
+          <p className="mt-2 text-gray-600">Browse verified tutors with expert profiles, transparent pricing, and student reviews.</p>
           <div className="mt-6 rounded-2xl p-2 shadow-lg bg-white border border-gray-200 flex flex-col gap-2 md:flex-row">
             <div className="flex flex-1 items-center gap-3 px-3">
               <Search className="h-5 w-5 text-gray-400" />
@@ -76,15 +99,16 @@ function Tutors() {
               </div>
               <div className="mt-6">
                 <h4 className="text-sm font-semibold text-gray-900">Max hourly price</h4>
-                <input type="range" min="5" max="100" value={price[0]} onChange={(e) => setPrice([parseInt(e.target.value)])} className="mt-4 w-full" />
-                <div className="mt-2 text-xs text-gray-600">Up to <span className="font-semibold text-gray-900">${price[0]}/hr</span></div>
+                <input type="range" min="5" max="100" value={price} onChange={(e) => setPrice(parseInt(e.target.value, 10))} className="mt-4 w-full" />
+                <div className="mt-2 text-xs text-gray-600">Up to <span className="font-semibold text-gray-900">${price}/hr</span></div>
               </div>
               <div className="mt-6">
                 <h4 className="text-sm font-semibold text-gray-900">Rating</h4>
                 <div className="mt-3 space-y-2.5">
-                  {[5, 4, 3].map(r => (
+                  {[5, 4, 3].map((r) => (
                     <label key={r} className="flex items-center gap-2.5 text-sm cursor-pointer text-gray-700 hover:text-gray-900">
-                      <input type="checkbox" className="w-4 h-4" /> <div className="flex">{[...Array(r)].map((_, i) => <Star key={i} className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />)}</div> & up
+                      <input type="checkbox" className="w-4 h-4" />
+                      <div className="flex">{[...Array(r)].map((_, i) => <Star key={i} className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />)}</div> & up
                     </label>
                   ))}
                 </div>
@@ -94,15 +118,28 @@ function Tutors() {
           </aside>
 
           <div>
-            <div className="flex items-center justify-between mb-5">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-5">
               <p className="text-sm text-gray-600"><span className="font-semibold text-gray-900">{tutors.length}</span> tutors found</p>
               <div className="flex items-center gap-2 text-sm text-gray-600">
                 <Filter className="h-4 w-4" /> Sort: <span className="font-medium text-gray-900">Best Match</span>
               </div>
             </div>
-            <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-              {tutors.map(t => <TutorCard key={t.id} t={t} />)}
-            </div>
+
+            {loading ? (
+              <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                {Array.from({ length: 6 }).map((_, index) => (
+                  <Card key={index} className="h-72 animate-pulse" />
+                ))}
+              </div>
+            ) : error ? (
+              <div className="rounded-3xl border border-red-200 bg-red-50 p-6 text-red-700">{error}</div>
+            ) : tutors.length === 0 ? (
+              <div className="rounded-3xl border border-gray-200 bg-white p-8 text-center text-gray-700">No tutors found yet. Please check again later.</div>
+            ) : (
+              <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                {tutors.map((t) => <TutorCard key={t.id} t={t} />)}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -117,26 +154,34 @@ function TutorCard({ t }) {
         <Heart className="h-4 w-4" />
       </button>
       <div className="flex items-center gap-4">
-        <div className={`relative h-16 w-16 rounded-2xl bg-gradient-to-br ${t.grad} grid place-items-center text-white font-bold text-xl shadow-lg`}>
-          {t.name.split(" ").map(n => n[0]).join("")}
-          <span className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full bg-green-500 ring-2 ring-white" />
+        <div className="relative h-16 w-16 rounded-2xl overflow-hidden bg-slate-200 shadow-sm">
+          {t.profilePhoto ? (
+            <img src={t.profilePhoto} alt={t.name} className="h-full w-full object-cover" />
+          ) : (
+            <div className={`h-full w-full grid place-items-center text-white font-bold text-xl bg-gradient-to-br ${t.grad}`}>
+              {t.name?.split(" ").map((word) => word[0]).join("")}
+            </div>
+          )}
+          <span className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full bg-emerald-500 ring-2 ring-white" />
         </div>
         <div className="flex-1 min-w-0">
           <h3 className="font-semibold text-gray-900 truncate">{t.name}</h3>
           <p className="text-sm text-gray-600 truncate">{t.subject} Tutor</p>
-          <div className="mt-1 flex items-center gap-1.5 text-xs">
+          <div className="mt-1 flex items-center gap-1.5 text-xs text-gray-500">
             <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
             <span className="font-semibold text-gray-900">{t.rating}</span>
-            <span className="text-gray-600">({t.reviews})</span>
+            <span>({t.reviews})</span>
           </div>
         </div>
       </div>
       <div className="mt-4 flex flex-wrap gap-1.5">
-        {t.tags.map(tag => <Badge key={tag} variant="outline" className="font-normal">{tag}</Badge>)}
+        {t.tags.map((tag) => (
+          <Badge key={tag} variant="outline" className="font-normal">{tag}</Badge>
+        ))}
       </div>
-      <div className="mt-5 flex items-center justify-between text-sm">
-        <div className="text-gray-600"><MapPin className="inline h-3.5 w-3.5 mr-1" />{t.location}</div>
-        <div className="text-gray-600">{t.exp} yrs exp</div>
+      <div className="mt-5 flex items-center justify-between text-sm text-gray-600">
+        <div className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5" />{t.location}</div>
+        <div>{t.exp} yrs exp</div>
       </div>
       <div className="mt-5 flex items-center justify-between border-t border-gray-200 pt-4">
         <div>

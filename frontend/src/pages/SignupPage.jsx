@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { GraduationCap, Users, Check } from "lucide-react";
 import { GoogleLogin } from "@react-oauth/google";
+import { verifyTutorProfileAndDecide } from "@/lib/auth-helpers";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/input";
 
@@ -39,15 +40,7 @@ function SignupPage() {
         
         if (data.success) {
           localStorage.setItem("token", data.token);
-          localStorage.setItem("tutor", JSON.stringify(data.user));
-          
-          if (!data.isProfileComplete) {
-            window.location.href = "/register-tutor";
-          } else if (data.status === "approved") {
-            window.location.href = "/dashboard";
-          } else {
-            window.location.href = "/dashboard";
-          }
+          await verifyTutorProfileAndDecide(data.user, data.token, navigate);
         } else {
           alert(data.message || "Google signup failed");
         }
@@ -136,7 +129,7 @@ function SignupPage() {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-900">Password</label>
-            <Input className="mt-2 h-11" placeholder="At least 8 characters" type="password" />
+            <Input name="password" autoComplete="new-password" className="mt-2 h-11" placeholder="At least 8 characters" type="password" />
           </div>
           <button
             type="submit"

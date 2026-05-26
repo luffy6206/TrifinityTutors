@@ -24,14 +24,14 @@ function LoginPage() {
       <form className="space-y-4">
         <div>
           <Label>Email</Label>
-          <Input className="mt-2 h-11" placeholder="you@email.com" type="email" />
+          <Input name="email" autoComplete="email" className="mt-2 h-11" placeholder="you@email.com" type="email" />
         </div>
         <div>
           <div className="flex items-center justify-between">
             <Label>Password</Label>
             <a href="#" className="text-xs text-primary hover:underline">Forgot password?</a>
           </div>
-          <Input className="mt-2 h-11" placeholder="••••••••" type="password" />
+          <Input name="password" autoComplete="current-password" className="mt-2 h-11" placeholder="••••••••" type="password" />
         </div>
         <Button asChild className="w-full h-11 bg-gradient-primary shadow-glow">
           <Link to="/dashboard/student">Log in</Link>

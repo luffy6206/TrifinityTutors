@@ -6,6 +6,7 @@ const tutorSchema = new mongoose.Schema({
   password: String,
 
   subject: String,
+  subjects: { type: [String], default: [] },
   locality: String,
   experience: Number,
   phone: String,
@@ -13,8 +14,23 @@ const tutorSchema = new mongoose.Schema({
   // Profile fields
   bio: { type: String, default: "" },
   qualifications: { type: String, default: "" },
+  education: { type: String, default: "" },
   teachingMethodology: { type: String, default: "" },
   hourlyRate: { type: Number, default: 0 },
+  trialRate: { type: Number, default: 0 },
+  profilePhoto: { type: String, default: "" },
+  tags: { type: [String], default: [] },
+  availability: { type: [String], default: [] },
+  
+  documents: [
+    {
+      fileName: String,
+      originalName: String,
+      url: String,
+      mimetype: String,
+      uploadedAt: Date,
+    }
+  ],
   
   // CV and Documents
   cvFile: { type: String, default: "" }, // File path/URL
@@ -44,6 +60,8 @@ const tutorSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  rating: { type: Number, default: 4.95 },
+  reviews: { type: Number, default: 0 },
 
 }, { timestamps: true });
 

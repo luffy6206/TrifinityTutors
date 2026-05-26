@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
+import { ProfileDropdown } from "@/components/ProfileDropdown"
 import "./TutorSidebar.css"
 
 function TutorSidebar({ navItems = [] }) {
@@ -7,9 +8,20 @@ function TutorSidebar({ navItems = [] }) {
   const navigate = useNavigate()
   const [isCollapsed, setIsCollapsed] = useState(false)
 
+  const tutorData = (() => {
+    try {
+      return JSON.parse(localStorage.getItem("tutor")) || {};
+    } catch {
+      return {};
+    }
+  })()
+
+  const tutorName = tutorData?.name || tutorData?.fullName || "Tutor"
+  const tutorImage = tutorData?.profilePhoto || tutorData?.photo || ""
+
   const handleLogout = () => {
     localStorage.removeItem("token")
-    localStorage.removeItem("user")
+    localStorage.removeItem("tutor")
     navigate("/")
   }
 
@@ -65,18 +77,16 @@ function TutorSidebar({ navItems = [] }) {
 
       <div className="sidebar-footer">
         <div className="user-info">
-          <div className="user-avatar">A</div>
+          <div className="user-avatar" style={{ height: "36px", width: "36px" }}>
+            <ProfileDropdown tutorData={tutorData} onLogout={handleLogout} />
+          </div>
           {!isCollapsed && (
             <div className="user-details">
-              <p className="user-name">Ananya R.</p>
+              <p className="user-name">{tutorName}</p>
               <p className="user-role">Tutor</p>
             </div>
           )}
         </div>
-        <button onClick={handleLogout} className="logout-btn" title="Logout">
-          <span>🚪</span>
-          {!isCollapsed && <span className="logout-text">Logout</span>}
-        </button>
       </div>
     </div>
   )
