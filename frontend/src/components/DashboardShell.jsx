@@ -1,8 +1,9 @@
 import React from "react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
-import { GraduationCap, LogOut, Bell, Search } from "lucide-react";
+import { GraduationCap, Bell, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { ProfileDropdown } from "@/components/ProfileDropdown";
 
 export function DashboardShell({ children, navItems, title, role }) {
   const location = useLocation();
@@ -17,6 +18,7 @@ export function DashboardShell({ children, navItems, title, role }) {
   }, []);
 
   const tutorName = tutorData?.name || tutorData?.fullName || "Tutor";
+  const tutorImage = tutorData?.profilePhoto || tutorData?.photo || "";
   const greeting = `Welcome back${tutorName ? `, ${tutorName}` : ""}`;
 
   const handleLogout = () => {
@@ -27,6 +29,10 @@ export function DashboardShell({ children, navItems, title, role }) {
     
     // Redirect to home
     window.location.href = "/";
+  };
+
+  const handleProfileLogout = () => {
+    handleLogout();
   };
 
   return (
@@ -79,18 +85,11 @@ export function DashboardShell({ children, navItems, title, role }) {
           </div>
           <div className="border-t border-gray-200 p-4">
             <div className="flex items-center gap-3">
-              <div className="h-9 w-9 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500" />
+              <ProfileDropdown tutorData={tutorData} onLogout={handleProfileLogout} />
               <div className="flex-1 min-w-0">
                 <div className="text-sm font-semibold truncate">{tutorName}</div>
                 <div className="text-xs text-gray-500 truncate">{role}</div>
               </div>
-              <button 
-                onClick={handleLogout}
-                className="grid h-8 w-8 place-items-center rounded-lg text-gray-500 hover:bg-gray-100 hover:text-red-600 transition-colors"
-                title="Logout"
-              >
-                <LogOut className="h-4 w-4" />
-              </button>
             </div>
           </div>
         </aside>
@@ -108,7 +107,7 @@ export function DashboardShell({ children, navItems, title, role }) {
                   <Bell className="h-5 w-5" />
                   <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-red-500" />
                 </Button>
-                <div className="h-9 w-9 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500" />
+                <ProfileDropdown tutorData={tutorData} onLogout={handleLogout} />
               </div>
               <p className="text-sm text-gray-600">{greeting}</p>
             </div>

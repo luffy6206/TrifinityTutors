@@ -13,11 +13,15 @@ const path = require("path");
 
 
 
-// GET all tutors
-router.get("/", auth, async (req, res) => {
+// GET all tutors (public listing)
+router.get("/", async (req, res) => {
   try {
-    const data = await Tutor.find();
-    res.json(data);
+    const filter = { profileComplete: true };
+    const tutors = await Tutor.find(filter)
+      .select("name email subject subjects locality experience hourlyRate trialRate bio profilePhoto rating reviews tags status profileComplete")
+      .sort({ createdAt: -1 });
+
+    res.json(tutors);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -96,32 +100,101 @@ router.post("/google-login", async (req, res) => {
 
 
 
-router.post("/complete-profile", protectTutor, async (req, res) => {
+router.post("/complete-profile", protectTutor, upload.fields([
+  { name: "profilePhoto", maxCount: 1 },
+  { name: "documents", maxCount: 5 }
+]), async (req, res) => {
   try {
     const user = await Tutoruser.findById(req.user.id);
-
-    const existing = await Tutor.findOne({ email: user.email });
-    if (existing) {
-      return res.json({ message: "Profile already exists" });
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
     }
 
-    const tutor = await Tutor.create({
-      name: user.name,
+    const {
+      firstName,
+      lastName,
+      phone,
+      city,
+      bio,
+      qualifications,
+      teachingMethodology,
+      mainSubject,
+      experience,
+      hourlyRate,
+      trialRate,
+      education,
+      subjects: subjectsRaw
+    } = req.body;
+
+    const subjects = typeof subjectsRaw === "string"
+      ? JSON.parse(subjectsRaw || "[]")
+      : Array.isArray(subjectsRaw)
+      ? subjectsRaw
+      : [];
+
+    const errors = [];
+    if (!firstName?.trim()) errors.push("First name is required");
+    if (!lastName?.trim()) errors.push("Last name is required");
+    if (!phone?.trim()) errors.push("Phone is required");
+    if (!city?.trim()) errors.push("City is required");
+    if (!mainSubject?.trim()) errors.push("Primary subject is required");
+    if (!experience || isNaN(parseInt(experience, 10)) || parseInt(experience, 10) < 1) errors.push("Experience is required");
+    if (!hourlyRate || isNaN(parseFloat(hourlyRate))) errors.push("Hourly rate is required");
+    if (!bio?.trim()) errors.push("Bio is required");
+    if (!qualifications?.trim()) errors.push("Qualifications are required");
+    if (!req.files || !req.files.profilePhoto || !req.files.profilePhoto.length) errors.push("Profile photo upload is required");
+
+    if (errors.length) {
+      return res.status(400).json({ success: false, message: errors.join(", ") });
+    }
+
+    const baseUrl = `${req.protocol}://${req.get("host")}`;
+    const profilePhotoFile = req.files.profilePhoto?.[0];
+    const profilePhotoUrl = profilePhotoFile ? `${baseUrl}/uploads/${profilePhotoFile.filename}` : user.photo || "";
+
+    const documentFiles = (req.files.documents || []).map((file) => ({
+      fileName: file.filename,
+      originalName: file.originalname,
+      url: `${baseUrl}/uploads/${file.filename}`,
+      mimetype: file.mimetype,
+      uploadedAt: new Date(),
+    }));
+
+    const existingTutor = await Tutor.findOne({ email: user.email });
+    const tutorData = {
+      name: `${firstName.trim()} ${lastName.trim()}`,
       email: user.email,
+      subject: mainSubject,
+      subjects,
+      locality: city,
+      experience: parseInt(experience, 10),
+      phone: phone.trim(),
+      bio: bio.trim(),
+      qualifications: qualifications.trim(),
+      teachingMethodology: teachingMethodology?.trim() || "",
+      hourlyRate: parseFloat(hourlyRate),
+      trialRate: parseFloat(trialRate) || 0,
+      education: education?.trim() || "",
+      profilePhoto: profilePhotoUrl,
+      documents: documentFiles,
+      profileComplete: true,
+      status: "pending",
+      verificationStatus: "pending",
+      tags: subjects.slice(0, 5),
+      photo: profilePhotoUrl,
+    };
 
-      subject: req.body.subject,
-      locality: req.body.locality,
-      experience: req.body.experience,
-      phone: req.body.phone,
+    let tutor;
+    if (existingTutor) {
+      tutor = await Tutor.findByIdAndUpdate(existingTutor._id, tutorData, { new: true, runValidators: true });
+    } else {
+      tutor = await Tutor.create(tutorData);
+    }
 
-      status: "pending"
-    });
-
-    res.json({ success: true });
-
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ error: "Failed to save profile" });
+    res.json({ success: true, message: "Tutor profile completed", tutor });
+  } catch (error) {
+    console.error("❌ Failed to complete tutor profile:", error);
+    res.status(500).json({ success: false, message: error.message || "Server error" });
   }
 });
 
@@ -259,16 +332,22 @@ router.get("/profile/:tutorId", async (req, res) => {
           name: tutorUser.name,
           email: tutorUser.email,
           photo: tutorUser.photo,
+          profilePhoto: tutorUser.photo || "",
           phone: "",
           subject: "",
+          subjects: [],
           locality: "",
           experience: 0,
           bio: "",
           qualifications: "",
           teachingMethodology: "",
+          education: "",
           hourlyRate: 0,
+          availability: [],
+          documents: [],
           cvFile: "",
           cvFileName: "",
+          profileComplete: false,
           verificationStatus: "unverified"
         });
       }
@@ -283,55 +362,121 @@ router.get("/profile/:tutorId", async (req, res) => {
 });
 
 // 📝 UPDATE tutor profile
-router.put("/profile/:tutorId", async (req, res) => {
+router.put("/profile/:tutorId", upload.fields([
+  { name: "profilePhoto", maxCount: 1 },
+  { name: "documents", maxCount: 5 }
+]), async (req, res) => {
   try {
     const tutorId = req.params.tutorId;
-    const { name, bio, qualifications, teachingMethodology, hourlyRate, phone, locality, subject, experience } = req.body;
+    const {
+      name,
+      bio,
+      qualifications,
+      teachingMethodology,
+      hourlyRate,
+      phone,
+      locality,
+      subject,
+      experience,
+      education,
+      subjects: subjectsRaw,
+      availability: availabilityRaw
+    } = req.body;
+
+    const subjects = typeof subjectsRaw === "string"
+      ? subjectsRaw.trim().length === 0
+        ? []
+        : subjectsRaw.split(",").map((item) => item.trim()).filter(Boolean)
+      : Array.isArray(subjectsRaw)
+        ? subjectsRaw
+        : [];
+
+    const availability = typeof availabilityRaw === "string"
+      ? availabilityRaw.trim().length === 0
+        ? []
+        : availabilityRaw.split(",").map((item) => item.trim()).filter(Boolean)
+      : Array.isArray(availabilityRaw)
+        ? availabilityRaw
+        : [];
 
     console.log("📝 Updating tutor profile:", tutorId);
 
-    // Try direct lookup first
-    let tutor = await Tutor.findByIdAndUpdate(
-      tutorId,
-      {
-        name,
-        bio,
-        qualifications,
-        teachingMethodology,
-        hourlyRate: parseInt(hourlyRate, 10) || 0,
-        phone,
-        locality,
-        subject,
-        experience: parseInt(experience, 10)
-      },
-      { new: true, runValidators: true }
-    );
+    const baseUrl = `${req.protocol}://${req.get("host")}`;
+    const profilePhotoFile = req.files?.profilePhoto?.[0];
+    const profilePhotoUrl = profilePhotoFile ? `${baseUrl}/uploads/${profilePhotoFile.filename}` : undefined;
 
-    // If not found, try email-based lookup
+    const documentFiles = (req.files?.documents || []).map((file) => ({
+      fileName: file.filename,
+      originalName: file.originalname,
+      url: `${baseUrl}/uploads/${file.filename}`,
+      mimetype: file.mimetype,
+      uploadedAt: new Date(),
+    }));
+
+    const updateData = {
+      ...(name !== undefined ? { name } : {}),
+      ...(bio !== undefined ? { bio } : {}),
+      ...(qualifications !== undefined ? { qualifications } : {}),
+      ...(teachingMethodology !== undefined ? { teachingMethodology } : {}),
+      ...(education !== undefined ? { education } : {}),
+      ...(phone !== undefined ? { phone } : {}),
+      ...(locality !== undefined ? { locality } : {}),
+      ...(subject !== undefined ? { subject } : {}),
+      ...(experience !== undefined ? { experience: parseInt(experience, 10) || 0 } : {}),
+      ...(hourlyRate !== undefined ? { hourlyRate: parseFloat(hourlyRate) || 0 } : {}),
+      ...(subjects.length ? { subjects } : {}),
+      ...(availability.length ? { availability } : {}),
+      profileComplete: true,
+    };
+
+    if (profilePhotoUrl) {
+      updateData.profilePhoto = profilePhotoUrl;
+      updateData.photo = profilePhotoUrl;
+    }
+
+    let tutor = await Tutor.findById(tutorId);
+    let tutorUser = null;
     if (!tutor) {
       console.log("⚠️ Direct lookup failed, trying email-based fallback...");
-      const tutorUser = await Tutoruser.findById(tutorId);
-      
-      if (!tutorUser) {
-        return res.status(404).json({ message: "User not found" });
+      tutorUser = await Tutoruser.findById(tutorId);
+      if (tutorUser) {
+        tutor = await Tutor.findOne({ email: tutorUser.email });
       }
-      
-      console.log("📧 Found Tutoruser, updating Tutor by email:", tutorUser.email);
-      tutor = await Tutor.findOneAndUpdate(
-        { email: tutorUser.email },
-        {
-          name,
-          bio,
-          qualifications,
-          teachingMethodology,
-          hourlyRate: parseInt(hourlyRate, 10) || 0,
-          phone,
-          locality,
-          subject,
-          experience: parseInt(experience, 10)
-        },
-        { new: true, runValidators: true }
-      );
+    }
+
+    if (!tutor && !tutorUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (!tutor) {
+      // Create a new tutor profile if none exists yet
+      console.log("📧 No existing Tutor profile found. Creating new Tutor for email:", tutorUser.email);
+      tutor = await Tutor.create({
+        name: name || tutorUser.name,
+        email: tutorUser.email,
+        photo: profilePhotoUrl || tutorUser.photo || "",
+        profilePhoto: profilePhotoUrl || tutorUser.photo || "",
+        subject: subject || "",
+        locality: locality || "",
+        experience: parseInt(experience, 10) || 0,
+        phone: phone || "",
+        bio: bio || "",
+        qualifications: qualifications || "",
+        teachingMethodology: teachingMethodology || "",
+        education: education || "",
+        hourlyRate: parseFloat(hourlyRate) || 0,
+        subjects,
+        availability,
+        documents: documentFiles,
+        profileComplete: true,
+        status: "pending",
+        verificationStatus: "pending",
+      });
+    } else {
+      if (documentFiles.length) {
+        updateData.documents = [...(tutor.documents || []), ...documentFiles];
+      }
+      tutor = await Tutor.findByIdAndUpdate(tutor._id, updateData, { new: true, runValidators: true });
     }
 
     if (!tutor) {

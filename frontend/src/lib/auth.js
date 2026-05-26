@@ -20,7 +20,7 @@ function getStoredUser() {
 export function dashboardPathFor(role) {
   switch (role) {
     case "tutor":
-      return "/dashboard";
+      return "/tutor-dashboard";
     case "student":
       return "/dashboard/student";
     case "admin":

@@ -5,10 +5,10 @@ import { Button } from "@/components/Button";
 import { Badge } from "@/components/Badge";
 
 const nav = [
-  { to: "/dashboard", label: "Overview", icon: LayoutDashboard, activeWhen: "/dashboard" },
+  { to: "/tutor-dashboard", label: "Overview", icon: LayoutDashboard, activeWhen: "/tutor-dashboard" },
   { to: "/tutor/schedule", label: "Schedule", icon: Calendar },
   { to: "/tutor/students", label: "Students", icon: Users },
-  { to: "/dashboard", label: "Analytics", icon: BarChart3, stayOnDashboard: true },
+  { to: "/tutor-dashboard", label: "Analytics", icon: BarChart3, stayOnDashboard: true },
   { to: "/tutor/messages", label: "Messages", icon: MessageCircle },
   { to: "/tutor/settings", label: "Settings", icon: Settings },
 ];

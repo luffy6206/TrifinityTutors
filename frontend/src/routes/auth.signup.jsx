@@ -61,15 +61,15 @@ function SignupPage() {
       <form className="space-y-4">
         <div>
           <Label>Full name</Label>
-          <Input className="mt-2 h-11" placeholder="Ananya Rao" />
+          <Input name="fullName" autoComplete="name" className="mt-2 h-11" placeholder="Ananya Rao" />
         </div>
         <div>
           <Label>Email</Label>
-          <Input className="mt-2 h-11" placeholder="you@email.com" type="email" />
+          <Input name="email" autoComplete="email" className="mt-2 h-11" placeholder="you@email.com" type="email" />
         </div>
         <div>
           <Label>Password</Label>
-          <Input className="mt-2 h-11" placeholder="At least 8 characters" type="password" />
+          <Input name="password" autoComplete="new-password" className="mt-2 h-11" placeholder="At least 8 characters" type="password" />
         </div>
         <Button asChild className="w-full h-11 bg-gradient-primary shadow-glow">
           <Link to={role === "tutor" ? "/register-tutor" : "/dashboard/student"}>Create account</Link>

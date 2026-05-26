@@ -1,5 +1,7 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
+import { fetchTutorProfile } from "@/lib/auth-helpers";
 import "./TutorLogin.css"
 
 function TutorLogin() {
@@ -10,6 +12,7 @@ function TutorLogin() {
   });
 
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -30,14 +33,37 @@ function TutorLogin() {
 
       const data = await res.json();
 
-      alert(data.message);
-
       if (data.message === "Login successful") {
         localStorage.setItem("token", data.token);
-        localStorage.setItem("tutor", JSON.stringify(data.user)); 
-        window.location.href = "/dashboard";
+        localStorage.setItem("tutor", JSON.stringify(data.user));
+
+        console.log("✅ Email/Password login successful for:", data.user?.email);
+        console.log("📝 Tutor data:", { 
+          name: data.user?.name, 
+          profileComplete: data.user?.profileComplete,
+          subject: data.user?.subject
+        });
+
+        // Check if new tutor (profile not complete)
+        const isProfileComplete = Boolean(data.user?.profileComplete) || 
+                                 Boolean(data.user?.subject) || 
+                                 Boolean(data.user?.hourlyRate);
+
+        if (!isProfileComplete) {
+          console.log("🆕 New tutor detected, redirecting to registration...");
+          alert("Welcome! Please complete your profile.");
+          navigate('/register-tutor', { replace: true });
+          return;
+        }
+
+        // Existing tutor - verify profile and redirect to dashboard
+        console.log("✅ Existing tutor, verifying profile...");
+        await redirectAfterAuth(data.user, data.token);
+      } else {
+        alert(data.message || "Login failed. Please try again.");
       }
     } catch (error) {
+      console.error("Login error:", error);
       alert("Login failed. Please try again.");
     } finally {
       setIsLoading(false);
@@ -67,41 +93,72 @@ function TutorLogin() {
       });
 
       if (!data.success) {
-        alert(data.message || "Login failed");
+        alert(data.message || "Google login failed");
         return;
       }
 
-      // Store token and user data
+      // Store token and basic tutor info immediately
       localStorage.setItem("token", data.token);
-      localStorage.setItem("tutor", JSON.stringify(data.user));
+      localStorage.setItem(
+        "tutor",
+        JSON.stringify({
+          ...data.user,
+          profileComplete: Boolean(data.isProfileComplete),
+          status: data.status || null,
+        })
+      );
 
-      console.log("✅ Stored in localStorage:", {
-        tutorId: data.user._id,
-        email: data.user.email,
-        isProfileComplete: data.isProfileComplete
-      });
-
-      // 🔥 Redirect logic based on profile completion
-      if (!data.isProfileComplete) {
-        // NEW USER - Show registration page
-        console.log("→ Redirecting to tutor registration (profile not complete)");
-        window.location.href = "/tutor-register";
-      } else if (data.status === "rejected") {
-        // ACCOUNT REJECTED
-        alert("Your account has been rejected. Please contact support.");
-      } else if (data.status === "pending") {
-        // EXISTING USER - PENDING APPROVAL
-        alert("Your account is under review. Please wait for approval.");
-        window.location.href = "/dashboard";
-      } else if (data.status === "approved") {
-        // EXISTING USER - APPROVED
-        window.location.href = "/dashboard";
+      // 🆕 New tutor - no Tutor profile document yet
+      if (data.isProfileComplete === false) {
+        console.log("🆕 New Google user detected, redirecting to registration form...");
+        navigate('/register-tutor', { replace: true });
+        return;
       }
+
+      // ✅ Existing tutor - profile already complete
+      console.log("✅ Existing tutor with complete profile, verifying...");
+      await redirectAfterAuth(data.user, data.token);
     } catch (err) {
-      console.log(err);
-      alert("Google login failed");
+      console.error("❌ Google login error:", err);
+      alert("Google login failed. Please try again.");
     }
   };
+
+  // Helper: verify tutor profile exists/complete and redirect appropriately
+  async function redirectAfterAuth(user, jwtToken) {
+    try {
+      const profile = await fetchTutorProfile(user, jwtToken);
+      
+      // If no profile exists, user needs to complete registration
+      if (!profile || !profile.profileComplete) {
+        console.log('📝 No complete profile found, redirecting to registration');
+        navigate('/register-tutor', { replace: true });
+        return;
+      }
+
+      // Update localStorage with complete profile
+      localStorage.setItem('tutor', JSON.stringify({
+        ...user,
+        ...profile,
+        profileComplete: true,
+        status: profile.status || null
+      }));
+
+      // Check if account was rejected
+      if (profile.status === 'rejected') {
+        alert('Your account has been rejected. Please contact support.');
+        return;
+      }
+
+      // Account is approved or pending - allow dashboard access
+      console.log('✅ Profile complete, redirecting to dashboard');
+      navigate('/tutor-dashboard', { replace: true });
+    } catch (err) {
+      console.error('❌ Error verifying tutor profile:', err);
+      // Fallback to registration if verification fails
+      navigate('/register-tutor', { replace: true });
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 flex items-center justify-center p-4">

@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
+import { verifyTutorProfileAndDecide } from "@/lib/auth-helpers";
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -25,15 +26,7 @@ function LoginPage() {
       
       if (tutorData.success) {
         localStorage.setItem("token", tutorData.token);
-        localStorage.setItem("tutor", JSON.stringify(tutorData.user));
-        
-        if (!tutorData.isProfileComplete) {
-          window.location.href = "/register-tutor";
-        } else if (tutorData.status === "approved") {
-          window.location.href = "/dashboard";
-        } else {
-          window.location.href = "/dashboard";
-        }
+        await verifyTutorProfileAndDecide(tutorData.user, tutorData.token, navigate);
       } else {
         // If not a tutor, try student login
         alert("Account not found. Please sign up first.");
@@ -67,14 +60,14 @@ function LoginPage() {
         <form className="space-y-4" onSubmit={handleLogin}>
           <div>
             <Label>Email</Label>
-            <Input className="mt-2 h-11" placeholder="you@email.com" type="email" />
+            <Input name="email" autoComplete="email" className="mt-2 h-11" placeholder="you@email.com" type="email" />
           </div>
           <div>
             <div className="flex items-center justify-between">
               <Label>Password</Label>
               <a href="#" className="text-xs text-primary hover:underline">Forgot password?</a>
             </div>
-            <Input className="mt-2 h-11" placeholder="••••••••" type="password" />
+            <Input name="password" autoComplete="current-password" className="mt-2 h-11" placeholder="••••••••" type="password" />
           </div>
           <Button type="submit" className="w-full h-11 bg-gradient-primary shadow-glow">
             Log in

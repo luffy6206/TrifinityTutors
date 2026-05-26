@@ -68,6 +68,8 @@ export default function Login() {
             <label htmlFor="email">Email Address</label>
             <input
               id="email"
+              name="email"
+              autoComplete="email"
               type="email"
               placeholder="Enter admin email"
               value={email}
@@ -80,6 +82,8 @@ export default function Login() {
             <label htmlFor="password">Password</label>
             <input
               id="password"
+              name="password"
+              autoComplete="current-password"
               type="password"
               placeholder="Enter password"
               value={password}

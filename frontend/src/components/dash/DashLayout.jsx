@@ -8,8 +8,8 @@ export function DashLayout({ items, title, children }) {
     <div className="min-h-screen flex bg-gradient-to-br from-background to-accent/30">
       <aside className="hidden md:flex w-64 shrink-0 flex-col bg-sidebar border-r border-sidebar-border p-4">
         <Link to="/" className="flex items-center gap-2 px-2 py-3 mb-4">
-          <span className="grid h-9 w-9 place-items-center rounded-xl gradient-primary shadow-glow">
-            <GraduationCap className="h-5 w-5 text-primary-foreground" />
+          <span className="grid h-9 w-9 place-items-center rounded-xl bg-blue-600 shadow-glow">
+            <GraduationCap className="h-5 w-5 text-white" />
           </span>
           <span className="font-bold tracking-tight">Trifinity</span>
         </Link>

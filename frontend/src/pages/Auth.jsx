@@ -326,12 +326,13 @@ function Auth() {
             <div>
               <label className="block text-sm font-semibold text-gray-900 mb-2">Email</label>
               <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="you@email.com"
-                className={`w-full px-4 py-3 rounded-lg border-2 transition-colors placeholder-gray-400 focus:outline-none ${
+                  type="email"
+                  name="email"
+                  autoComplete="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="you@email.com"
+                  className={`w-full px-4 py-3 rounded-lg border-2 transition-colors placeholder-gray-400 focus:outline-none ${
                   errors.email
                     ? "border-red-500 focus:border-red-600"
                     : "border-gray-200 focus:border-blue-500"
@@ -346,6 +347,7 @@ function Auth() {
               <input
                 type="password"
                 name="password"
+                autoComplete="new-password"
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="At least 8 characters"

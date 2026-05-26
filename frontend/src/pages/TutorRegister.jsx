@@ -84,37 +84,33 @@ function TutorRegister() {
 
       const data = await response.json()
 
-      if (response.ok || data.message === "Tutor registered successfully") {
-        alert("✅ Registration successful! Redirecting to dashboard...")
+      if (response.ok && data.success) {
+        console.log("✅ Registration successful, tutor created:", data.tutor?._id)
         
         // Update localStorage with the newly created tutor data
-        const currentTutor = JSON.parse(localStorage.getItem("tutor"))
-        if (currentTutor && data.tutor) {
-          // Merge the new tutor data with stored data
-          localStorage.setItem("tutor", JSON.stringify({
+        const currentTutor = JSON.parse(localStorage.getItem("tutor") || "{}")
+        if (data.tutor) {
+          // Merge the new tutor data with existing data
+          const updatedTutor = {
             ...currentTutor,
             ...data.tutor,
-            _id: data.tutor._id  // Ensure we have the Tutor model ID
-          }))
-          console.log("Updated tutor data in localStorage:", data.tutor)
+            profileComplete: true
+          }
+          localStorage.setItem("tutor", JSON.stringify(updatedTutor))
+          console.log("📝 Updated tutor data in localStorage:", { id: data.tutor._id, email: data.tutor.email })
         }
         
-        // Clear form
-        setForm({
-          name: "",
-          email: "",
-          subject: "",
-          locality: "",
-          experience: "",
-          phone: ""
-        })
-        // Redirect to dashboard
-        navigate("/dashboard")
+        // Show success message (brief alert then redirect)
+        alert("✅ Registration successful! Redirecting to dashboard...")
+        
+        // Redirect to tutor dashboard after successful registration
+        navigate("/tutor-dashboard", { replace: true })
       } else {
-        alert("❌ " + (data.message || "Registration failed"))
+        console.error("❌ Registration failed:", data.message)
+        alert("❌ " + (data.message || "Registration failed. Please try again."))
       }
     } catch (error) {
-      console.error("Registration error:", error)
+      console.error("❌ Registration error:", error)
       alert("❌ Error registering tutor: " + error.message)
     } finally {
       setIsLoading(false)

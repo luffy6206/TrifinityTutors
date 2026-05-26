@@ -2,6 +2,8 @@ import { Link, useLocation } from "react-router-dom";
 import { GraduationCap, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/lib/auth";
+import { ProfileDropdown } from "@/components/ProfileDropdown";
 
 const links = [
   { to: "/tutors", label: "Find Tutors" },
@@ -15,6 +17,7 @@ export function Navbar() {
   const [open, setOpen] = useState(false);
   const location = useLocation();
   const path = location.pathname;
+  const { user, logout } = useAuth();
 
   return (
     <header className="sticky top-0 z-50 w-full">
@@ -44,12 +47,18 @@ export function Navbar() {
           </nav>
 
           <div className="hidden items-center gap-2 md:flex">
-            <Button variant="ghost" size="default" asChild>
-              <Link to="/auth/login">Log in</Link>
-            </Button>
-            <Button size="default" asChild>
-              <Link to="/auth/signup">Get Started</Link>
-            </Button>
+            {user ? (
+              <ProfileDropdown tutorData={user} onLogout={logout} />
+            ) : (
+              <>
+                <Button variant="ghost" size="default" asChild>
+                  <Link to="/auth/login">Log in</Link>
+                </Button>
+                <Button size="default" asChild>
+                  <Link to="/auth/signup">Get Started</Link>
+                </Button>
+              </>
+            )}
           </div>
 
           <button
@@ -74,16 +83,29 @@ export function Navbar() {
               </Link>
             ))}
             <div className="flex gap-2 pt-2">
-              <Button variant="outline" size="default" asChild>
-                <Link to="/auth/login" onClick={() => setOpen(false)}>
-                  Log in
-                </Link>
-              </Button>
-              <Button size="default" asChild>
-                <Link to="/auth/signup" onClick={() => setOpen(false)}>
-                  Get Started
-                </Link>
-              </Button>
+              {user ? (
+                <>
+                  <Link to="/tutor-profile" onClick={() => setOpen(false)} className="block rounded-lg px-3 py-2 text-sm font-medium hover:bg-gray-100 text-gray-700">
+                    Profile
+                  </Link>
+                  <button onClick={() => { logout(); setOpen(false); }} className="block rounded-lg px-3 py-2 text-sm font-medium text-red-600">
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Button variant="outline" size="default" asChild>
+                    <Link to="/auth/login" onClick={() => setOpen(false)}>
+                      Log in
+                    </Link>
+                  </Button>
+                  <Button size="default" asChild>
+                    <Link to="/auth/signup" onClick={() => setOpen(false)}>
+                      Get Started
+                    </Link>
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         )}
