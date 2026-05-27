@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createFileRoute } from "@tanstack/react-router";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { GoogleLogin } from "@react-oauth/google";
 import { Button } from "@/components/ui/button";
@@ -13,8 +13,10 @@ export const Route = createFileRoute("/auth/login")({
 
 function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const from = location.state?.from || "/student-dashboard";
 
   const handleGoogleLogin = async (credentialResponse) => {
     setErrors({});
@@ -43,7 +45,7 @@ function LoginPage() {
         role: "student",
         googleId: data.user?.googleId || "",
       }));
-      navigate("/student-dashboard");
+      navigate(from);
     } catch (error) {
       setErrors({ submit: error.message || "Google login failed. Please try again." });
     } finally {
@@ -93,7 +95,7 @@ function LoginPage() {
           <Input name="password" autoComplete="current-password" className="mt-2 h-11" placeholder="••••••••" type="password" />
         </div>
         <Button asChild className="w-full h-11 bg-gradient-primary shadow-glow">
-          <Link to="/dashboard/student">Log in</Link>
+          <Link to={from}>Log in</Link>
         </Button>
       </form>
     </div>

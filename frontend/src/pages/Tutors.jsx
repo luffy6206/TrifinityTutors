@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { Search, MapPin, Star, Heart, ArrowRight, Filter, SlidersHorizontal } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
@@ -188,9 +189,12 @@ function TutorCard({ t }) {
           <span className="text-2xl font-bold text-gray-900">${t.price}</span>
           <span className="text-sm text-gray-600">/hr</span>
         </div>
-        <Button className="bg-blue-600 hover:bg-blue-700 text-white group-hover:scale-105 transition-transform">
+        <Link
+          to={`/tutors/${t.id}`}
+          className="inline-flex items-center rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700"
+        >
           Book Now <ArrowRight className="ml-1 h-4 w-4" />
-        </Button>
+        </Link>
       </div>
     </Card>
   );

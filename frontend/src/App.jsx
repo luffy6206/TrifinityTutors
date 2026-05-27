@@ -18,6 +18,7 @@ import TutorLogin from "./pages/TutorLogin"
 import MyApplications from "./pages/MyApplications"
 import TutorProfile from "./pages/TutorProfile"
 import TutorSchedule from "./pages/TutorSchedule"
+import TutorDetails from "./pages/TutorDetails"
 import Navbar from "./components/Navbar"
 import MainLayout from "./layouts/MainLayout"
 
@@ -106,6 +107,9 @@ function App() {
 
         <Route path="/tutors" element={
           <Tutors />
+        } />
+        <Route path="/tutors/:id" element={
+          <TutorDetails />
         } />
 
         {/* LOGIN (NO NAVBAR) */}
