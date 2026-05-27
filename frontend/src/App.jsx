@@ -19,6 +19,7 @@ import MyApplications from "./pages/MyApplications"
 import TutorProfile from "./pages/TutorProfile"
 import TutorSchedule from "./pages/TutorSchedule"
 import TutorDetails from "./pages/TutorDetails"
+import MessagePage from "./pages/MessagePage"
 import BookingSession from "./pages/BookingSession"
 import Checkout from "./pages/Checkout"
 import Navbar from "./components/Navbar"
@@ -112,6 +113,11 @@ function App() {
         } />
         <Route path="/tutors/:id" element={
           <TutorDetails />
+        } />
+        <Route path="/messages/:id" element={
+          <ProtectedRoute>
+            <MessagePage />
+          </ProtectedRoute>
         } />
         <Route path="/booking/:id" element={
           <ProtectedRoute>

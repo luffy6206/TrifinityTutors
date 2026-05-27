@@ -153,7 +153,7 @@ function TutorDetails() {
                         redirectToStudentLogin();
                         return;
                       }
-                      setBookingMessage("Please select a time slot below to request a chat or booking with this tutor.");
+                      navigate(`/messages/${id}`);
                     }}>
                     <MessageSquare className="mr-2 h-4 w-4" /> Message
                   </Button>
