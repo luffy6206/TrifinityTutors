@@ -66,13 +66,7 @@ function TutorDetails() {
       redirectToStudentLogin();
       return;
     }
-
-    if (!selectedSlot) {
-      setBookingMessage("Please select a time slot before booking.");
-      return;
-    }
-
-    setBookingMessage(`Your request to book ${selectedSlot} with ${tutor.name} has been sent.`);
+    navigate(`/booking/${id}`);
   };
 
   if (loading) {
@@ -151,13 +145,7 @@ function TutorDetails() {
                   <div className="text-4xl font-semibold text-slate-900">₹{price}<span className="text-base font-medium text-slate-500">/hr</span></div>
                 </div>
                 <div className="flex flex-col gap-2 sm:flex-row">
-                  <Button onClick={() => {
-                      if (!isStudentLoggedIn) {
-                        redirectToStudentLogin();
-                        return;
-                      }
-                      document.getElementById("booking-section")?.scrollIntoView({ behavior: "smooth" });
-                    }} className="bg-sky-600 hover:bg-sky-700 text-white">
+                  <Button onClick={handleBookSession} className="bg-sky-600 hover:bg-sky-700 text-white">
                     Book session
                   </Button>
                   <Button variant="outline" className="text-slate-900 hover:bg-slate-100" onClick={() => {
@@ -266,9 +254,6 @@ function TutorDetails() {
               <Button className="mt-5 w-full bg-sky-600 hover:bg-sky-700 text-white" onClick={handleBookSession}>
                 Book a session
               </Button>
-              {bookingMessage ? (
-                <p className="mt-4 rounded-2xl bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{bookingMessage}</p>
-              ) : null}
             </Card>
 
             <Card className="p-6 border border-gray-200 bg-slate-50">
