@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import {
   Search, MapPin, ArrowRight, Sparkles, Shield, Clock, Award,
@@ -138,19 +138,51 @@ function FloatingCard({ className, icon, label, sub }) {
 }
 
 function SearchBar() {
+  const navigate = useNavigate();
+  const [searchValue, setSearchValue] = useState("");
+  const [locationValue, setLocationValue] = useState("");
+
+  const handleSearch = (event) => {
+    event?.preventDefault();
+    const params = new URLSearchParams();
+
+    if (searchValue.trim()) {
+      params.set("search", searchValue.trim());
+    }
+
+    if (locationValue.trim()) {
+      params.set("location", locationValue.trim());
+    }
+
+    const query = params.toString();
+    navigate(`/tutors${query ? `?${query}` : ""}`);
+  };
+
   return (
-    <div className="mt-7 glass-strong rounded-2xl p-2 shadow-soft flex flex-col gap-2 sm:flex-row">
+    <form onSubmit={handleSearch} className="mt-7 glass-strong rounded-2xl p-2 shadow-soft flex flex-col gap-2 sm:flex-row">
       <div className="flex flex-1 items-center gap-3 px-3">
         <Search className="h-5 w-5 text-muted-foreground" />
-        <Input className="border-0 bg-transparent shadow-none focus-visible:ring-0 px-0" placeholder="Subject (e.g. Calculus)" />
+        <Input
+          value={searchValue}
+          onChange={(e) => setSearchValue(e.target.value)}
+          className="border-0 bg-transparent shadow-none focus-visible:ring-0 px-0"
+          placeholder="Subject (e.g. Calculus)"
+        />
       </div>
       <div className="h-px sm:h-auto sm:w-px bg-border" />
       <div className="flex flex-1 items-center gap-3 px-3">
         <MapPin className="h-5 w-5 text-muted-foreground" />
-        <Input className="border-0 bg-transparent shadow-none focus-visible:ring-0 px-0" placeholder="Location or 'Online'" />
+        <Input
+          value={locationValue}
+          onChange={(e) => setLocationValue(e.target.value)}
+          className="border-0 bg-transparent shadow-none focus-visible:ring-0 px-0"
+          placeholder="Location or 'Online'"
+        />
       </div>
-      <Button size="lg" className="bg-gradient-primary shadow-glow hover:opacity-95">Search</Button>
-    </div>
+      <Button type="submit" size="lg" className="bg-gradient-primary shadow-glow hover:opacity-95">
+        Search
+      </Button>
+    </form>
   );
 }
 

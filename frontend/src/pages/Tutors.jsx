@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { Search, MapPin, Star, Heart, ArrowRight, Filter, SlidersHorizontal } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
@@ -34,8 +34,16 @@ const normalize = (value) => String(value || "").trim().toLowerCase();
 const doesMatchSearch = (tutor, term) => {
   if (!term) return true;
   const normalizedTerm = normalize(term);
-  return [tutor.name, tutor.subject, tutor.location, ...(tutor.tags || [])]
-    .some((field) => normalize(field).includes(normalizedTerm));
+  return [
+    tutor.name,
+    tutor.subject,
+    tutor.location,
+    tutor.expertise,
+    tutor.bio,
+    tutor.about,
+    tutor.description,
+    ...(tutor.tags || []),
+  ].some((field) => normalize(field).includes(normalizedTerm));
 };
 
 const doesMatchSubjects = (tutor, selectedSubjects) => {
@@ -63,6 +71,14 @@ function Tutors() {
   const [tutors, setTutors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  useEffect(() => {
+    const initialSearch = searchParams.get("search") || "";
+    const initialLocation = searchParams.get("location") || "";
+    setSearchTerm(initialSearch);
+    setLocation(initialLocation);
+  }, [searchParams]);
 
   useEffect(() => {
     async function fetchTutors() {
@@ -129,8 +145,10 @@ function Tutors() {
   };
 
   const handleSearchClick = () => {
-    setSearchTerm((value) => normalize(value));
-    setLocation((value) => normalize(value));
+    const params = {};
+    if (searchTerm.trim()) params.search = searchTerm.trim();
+    if (location.trim()) params.location = location.trim();
+    setSearchParams(params);
   };
 
   const handleClearFilters = () => {
@@ -139,6 +157,7 @@ function Tutors() {
     setSelectedSubjects([]);
     setSelectedRatings([]);
     setMaxPrice(100);
+    setSearchParams({});
   };
 
   return (
