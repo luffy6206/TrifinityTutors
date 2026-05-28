@@ -88,11 +88,9 @@ function App() {
         } />
 
         <Route path="/student-dashboard" element={
-          <MainLayout>
-            <ProtectedRoute>
-              <StudentDashboard />
-            </ProtectedRoute>
-          </MainLayout>
+          <ProtectedRoute>
+            <StudentDashboard />
+          </ProtectedRoute>
         } />
 
 
@@ -105,11 +103,9 @@ function App() {
         } />
 
         <Route path="/dashboard/student" element={
-          <MainLayout>
-            <ProtectedRoute>
-              <StudentDashboard />
-            </ProtectedRoute>
-          </MainLayout>
+          <ProtectedRoute>
+            <StudentDashboard />
+          </ProtectedRoute>
         } />
 
         <Route path="/dashboard/tutor" element={

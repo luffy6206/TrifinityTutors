@@ -18,17 +18,43 @@ let io;
 // 1. Student calls this to start a booking
 router.post('/create-order', auth, async (req, res) => {
   try {
-    const { tutorId, date, timeSlot, mode, durationMins = 60 } = req.body;
+    // Expect booking details from frontend: tutorId, date, timeSlot, mode, duration (hours), subtotal, platformFee, total
+    const { tutorId, date, timeSlot, mode, duration, subtotal, platformFee, total } = req.body;
     const tutor = await Tutor.findById(tutorId);
     if (!tutor) return res.status(404).json({ error: 'Tutor not found' });
 
-    const totalAmount = Math.round((tutor.hourlyRate / 60) * durationMins * 100);
+    // Normalize duration (hours) and compute minutes
+    const durationHours = Number(duration) || 0;
+    const durationMins = Math.round(durationHours * 60);
+
+    // Server-side compute expected subtotal and total to avoid tampering
+    const expectedSubtotal = Number((tutor.hourlyRate || 0) * durationHours);
+    const expectedPlatformFee = Number(platformFee || 0);
+    const expectedTotal = Number((expectedSubtotal || 0) + expectedPlatformFee);
+
+    // Use frontend total if it matches expectedTotal within small tolerance, otherwise prefer server expectedTotal
+    const sentTotal = Number(total || 0);
+    const finalTotal = Math.abs(sentTotal - expectedTotal) < 0.01 ? sentTotal : expectedTotal;
+
+    // Convert to paise
+    const amountInPaise = Math.round(finalTotal * 100);
 
     const order = await razorpay.orders.create({
-      amount: totalAmount,
+      amount: amountInPaise,
       currency: 'INR',
       receipt: `booking_${Date.now()}`,
-      notes: { tutorId, studentId: req.user.id, date, timeSlot, mode, durationMins },
+      notes: {
+        tutorId,
+        studentId: req.user.id,
+        date,
+        timeSlot,
+        mode,
+        durationHours,
+        durationMins,
+        subtotal: expectedSubtotal,
+        platformFee: expectedPlatformFee,
+        total: finalTotal,
+      },
     });
 
     res.json({
@@ -37,6 +63,7 @@ router.post('/create-order', auth, async (req, res) => {
       currency: order.currency,
       tutorName: tutor.name,
       keyId: process.env.RAZORPAY_KEY_ID,
+      total: finalTotal,
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -79,7 +106,8 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
           timeSlot: notes.timeSlot,
           mode: notes.mode,
           durationMins: notes.durationMins,
-          hourlyRate: payment.amount / (notes.durationMins / 60) / 100,
+          durationHours: notes.durationHours,
+          hourlyRate: notes.durationHours && notes.durationHours > 0 ? Number(notes.subtotal) / Number(notes.durationHours) : undefined,
           totalAmount: payment.amount / 100,
           razorpayOrderId: payment.order_id,
         },

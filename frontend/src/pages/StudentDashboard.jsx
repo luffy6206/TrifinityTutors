@@ -19,7 +19,8 @@ const nav = [
 
 function StudentDashboard() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, token } = useAuth();
+  const [savedTutors, setSavedTutors] = useState([]);
 
   useEffect(() => {
     if (!user) {
@@ -30,13 +31,54 @@ function StudentDashboard() {
     }
   }, [user, navigate]);
 
+  useEffect(() => {
+    const loadSavedTutors = async () => {
+      if (user?.savedTutors?.length) {
+        setSavedTutors(user.savedTutors.map((tutor) => ({
+          id: tutor._id || tutor.id,
+          name: tutor.name || "Tutor",
+          subject: tutor.subject || "Tutoring",
+          rating: tutor.rating || 0,
+          price: tutor.hourlyRate || tutor.price || 0,
+          profilePhoto: tutor.profilePhoto || tutor.photo || "",
+        })));
+        return;
+      }
+
+      if (!token) {
+        setSavedTutors([]);
+        return;
+      }
+
+      try {
+        const res = await fetch("http://localhost:5000/api/students/saved-tutors", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        setSavedTutors((data.savedTutors || []).map((tutor) => ({
+          id: tutor._id || tutor.id,
+          name: tutor.name || "Tutor",
+          subject: tutor.subject || "Tutoring",
+          rating: tutor.rating || 0,
+          price: tutor.hourlyRate || tutor.price || 0,
+          profilePhoto: tutor.profilePhoto || tutor.photo || "",
+        })));
+      } catch (err) {
+        console.error("Error loading saved tutors:", err);
+      }
+    };
+
+    loadSavedTutors();
+  }, [user, token]);
+
   const userName = user?.name || "Student";
 
   return (
     <DashboardShell navItems={nav} title={`Welcome back, ${userName} 👋`} role="Student">
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard label="Active sessions" value="3" delta="+1 this week" icon={BookOpen} />
-        <StatCard label="Saved tutors" value="12" icon={Heart} accent="success" />
+        <StatCard label="Saved tutors" value={String(savedTutors.length)} icon={Heart} accent="success" />
         <StatCard label="Hours learned" value="48" delta="+6 this month" icon={Clock} accent="warning" />
         <StatCard label="Average rating" value="4.9" icon={Star} />
       </div>
@@ -74,30 +116,45 @@ function StudentDashboard() {
         <Card className="p-6 border-border/60">
           <div className="flex items-center justify-between mb-5">
             <h2 className="font-display font-semibold">Saved tutors</h2>
-            <Button variant="ghost" size="sm">View all</Button>
+            <Button asChild variant="ghost" size="sm">
+              <Link to="/tutors">Browse tutors</Link>
+            </Button>
           </div>
-          <div className="space-y-4">
-            {[
-              { name: "Mei Lin", subject: "Chemistry", rating: 4.92, color: "from-violet-400 to-purple-500" },
-              { name: "Kabir Singh", subject: "SAT Prep", rating: 4.88, color: "from-cyan-400 to-blue-500" },
-              { name: "Amelia Brown", subject: "Biology", rating: 4.85, color: "from-rose-400 to-pink-500" },
-            ].map((t,i)=>(
-              <div key={i} className="flex items-center gap-3">
-                <div className={`h-10 w-10 rounded-full bg-gradient-to-br ${t.color}`} />
-                <div className="flex-1 min-w-0">
-                  <div className="font-medium text-sm truncate">{t.name}</div>
-                  <div className="text-xs text-muted-foreground truncate">{t.subject}</div>
+          {savedTutors.length > 0 ? (
+            <div className="space-y-4">
+              {savedTutors.map((tutor) => (
+                <div key={tutor.id} className="flex flex-col gap-4 rounded-3xl border border-gray-200 p-4 sm:flex-row sm:items-center sm:justify-between bg-white">
+                  <div className="flex items-center gap-4">
+                    <div className="h-16 w-16 rounded-3xl overflow-hidden bg-slate-200">
+                      {tutor.profilePhoto ? (
+                        <img src={tutor.profilePhoto} alt={tutor.name} className="h-full w-full object-cover" />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-blue-400 to-indigo-500 text-white font-semibold">
+                          {tutor.name?.split(" ").map((word) => word[0]).join("")}
+                        </div>
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <div className="font-semibold text-gray-900 truncate">{tutor.name}</div>
+                      <div className="text-sm text-muted-foreground truncate">{tutor.subject}</div>
+                      <div className="mt-1 flex items-center gap-2 text-sm text-gray-600">
+                        <Star className="h-4 w-4 fill-warning text-warning" />
+                        <span className="font-semibold">{tutor.rating.toFixed(1)}</span>
+                        <span className="text-muted-foreground">${tutor.price}/hr</span>
+                      </div>
+                    </div>
+                  </div>
+                  <Button asChild size="sm" className="w-full sm:w-auto">
+                    <Link to={`/tutors/${tutor.id}`}>View profile</Link>
+                  </Button>
                 </div>
-                <div className="flex items-center gap-1 text-xs">
-                  <Star className="h-3.5 w-3.5 fill-warning text-warning" />
-                  <span className="font-semibold">{t.rating}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-          <Button asChild className="mt-5 w-full bg-gradient-primary shadow-glow">
-            <Link to="/tutors">Discover more</Link>
-          </Button>
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-3xl border border-dashed border-gray-200 bg-white/80 p-6 text-center text-sm text-gray-600">
+              No saved tutors yet. Save a tutor from the Find Tutors page to see them here.
+            </div>
+          )}
         </Card>
       </div>
 
