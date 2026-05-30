@@ -126,6 +126,156 @@ router.post("/google-signup", async (req, res) => {
   }
 });
 
+// 🔐 STRICT LOGIN: Google Login for Students (No Auto-Create)
+router.post("/google-login", async (req, res) => {
+  try {
+    const { token } = req.body;
+
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    const { name, email, picture, sub } = payload;
+    
+    console.log("🔐 Google OAuth - Student Login (Strict) for:", email);
+
+    // STRICT: Only authenticate if student already exists
+    let student = await Student.findOne({ email });
+    
+    if (!student) {
+      console.log("❌ Student not found:", email);
+      return res.status(401).json({
+        success: false,
+        message: "No student account found. Please create an account first."
+      });
+    }
+
+    // Update Google info if needed
+    student.googleId = sub || student.googleId;
+    student.photo = picture || student.photo;
+    student.name = name || student.name;
+    await student.save();
+    console.log("✅ Student authenticated:", email);
+
+    await student.populate({
+      path: "savedTutors",
+      select: "_id name subject hourlyRate rating reviews profilePhoto photo",
+    });
+
+    const tokenJwt = jwt.sign({ id: student._id, role: student.role }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
+    res.json({
+      success: true,
+      token: tokenJwt,
+      user: {
+        _id: student._id,
+        id: student._id,
+        name: student.name,
+        email: student.email,
+        googleId: student.googleId,
+        photo: student.photo,
+        avatar: student.avatar || student.photo,
+        bio: student.bio || "",
+        phone: student.phone || "",
+        preferredSubjects: student.preferredSubjects || [],
+        location: student.location || "",
+        bookedSessions: student.bookedSessions || [],
+        savedTutors: student.savedTutors || [],
+        role: "student",
+      },
+      message: "Student login successful"
+    });
+
+  } catch (err) {
+    console.log("❌ Google Login Error:", err.message);
+    res.status(401).json({
+      success: false,
+      message: "Google login failed"
+    });
+  }
+});
+
+// 🔐 STRICT LOGIN: Email/Password Login for Students (No Auto-Create)
+router.post("/email-login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Email and password are required"
+      });
+    }
+
+    console.log("🔐 Email Login - Student for:", email);
+
+    // STRICT: Only authenticate if student already exists
+    const student = await Student.findOne({ email });
+
+    if (!student) {
+      console.log("❌ Student not found:", email);
+      return res.status(401).json({
+        success: false,
+        message: "No student account found. Please create an account first."
+      });
+    }
+
+    // For now, we'll do simple password comparison (in production, use bcrypt)
+    // Assuming student model stores password in plain text for now
+    if (student.password !== password) {
+      console.log("❌ Incorrect password for:", email);
+      return res.status(401).json({
+        success: false,
+        message: "Invalid email or password"
+      });
+    }
+
+    console.log("✅ Student authenticated:", email);
+
+    await student.populate({
+      path: "savedTutors",
+      select: "_id name subject hourlyRate rating reviews profilePhoto photo",
+    });
+
+    const tokenJwt = jwt.sign({ id: student._id, role: student.role }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
+    res.json({
+      success: true,
+      token: tokenJwt,
+      user: {
+        _id: student._id,
+        id: student._id,
+        name: student.name,
+        email: student.email,
+        googleId: student.googleId || "",
+        photo: student.photo || "",
+        avatar: student.avatar || student.photo || "",
+        bio: student.bio || "",
+        phone: student.phone || "",
+        preferredSubjects: student.preferredSubjects || [],
+        location: student.location || "",
+        bookedSessions: student.bookedSessions || [],
+        savedTutors: student.savedTutors || [],
+        role: "student",
+      },
+      message: "Student login successful"
+    });
+
+  } catch (err) {
+    console.error("❌ Email Login Error:", err.message);
+    res.status(500).json({
+      success: false,
+      message: "Login failed. Please try again."
+    });
+  }
+});
+
 router.get("/me", auth, async (req, res) => {
   try {
     if (req.user.role !== "student") {

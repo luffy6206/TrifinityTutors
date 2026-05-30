@@ -38,7 +38,79 @@ router.get("/count", auth, async (req, res) => {
 });
 
 
-// 🔐 Google Login Route
+// 🔐 Google Signup Route - create tutor auth record and allow profile completion after signup
+router.post("/google-signup", async (req, res) => {
+  try {
+    const { token } = req.body;
+
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    const { name, email, picture, sub } = payload;
+    console.log("🔐 Google OAuth - Tutor Signup for:", email);
+
+    const tutorProfile = await Tutor.findOne({ email });
+    let tutorUser = await Tutoruser.findOne({ email });
+
+    if (!tutorUser) {
+      tutorUser = await Tutoruser.create({
+        name,
+        email,
+        googleId: sub,
+        photo: picture,
+        role: "tutor"
+      });
+      console.log("✅ Created Tutoruser auth record for:", email);
+    } else {
+      const updatedFields = {};
+      if (tutorUser.googleId !== sub) updatedFields.googleId = sub;
+      if (picture && tutorUser.photo !== picture) updatedFields.photo = picture;
+      if (name && tutorUser.name !== name) updatedFields.name = name;
+      if (Object.keys(updatedFields).length) {
+        tutorUser = await Tutoruser.findByIdAndUpdate(tutorUser._id, updatedFields, { new: true });
+        console.log("✅ Updated existing Tutoruser with latest Google profile data");
+      }
+    }
+
+    const effectivePhoto = tutorProfile?.profilePhoto || tutorProfile?.photo || tutorUser.photo || picture || "";
+    const isProfileComplete = !!tutorProfile;
+
+    const jwtToken = jwt.sign(
+      { id: tutorUser._id, role: tutorUser.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    res.json({
+      success: true,
+      token: jwtToken,
+      user: {
+        _id: tutorUser._id,
+        id: tutorUser._id,
+        name: tutorUser.name,
+        email: tutorUser.email,
+        photo: effectivePhoto,
+        profilePhoto: effectivePhoto,
+        googleId: tutorUser.googleId,
+        role: tutorUser.role,
+      },
+      isProfileComplete,
+      status: tutorProfile?.status || null,
+      message: isProfileComplete ? "Tutor signup completed" : "Tutor signup initiated"
+    });
+  } catch (err) {
+    console.log("❌ Google Signup Error:", err.message);
+    res.status(401).json({
+      success: false,
+      message: "Google signup failed"
+    });
+  }
+});
+
+// 🔐 Google Login Route - STRICT LOGIN (No Auto-Create)
 router.post("/google-login", async (req, res) => {
   try {
     const { token } = req.body;
@@ -51,36 +123,45 @@ router.post("/google-login", async (req, res) => {
     const payload = ticket.getPayload();
     const { name, email, picture, sub } = payload;
     
-    console.log("🔐 Google OAuth - Processing login for:", email);
-    
-    let user = await Tutoruser.findOne({ email });
+    console.log("🔐 Google OAuth - Tutor Login (Strict) for:", email);
 
-    if (!user) {
-      console.log("Creating new Tutoruser for:", email);
-      user = await Tutoruser.create({
-        name,
+    const tutorProfile = await Tutor.findOne({ email });
+    let tutorUser = await Tutoruser.findOne({ email });
+
+    if (!tutorUser) {
+      if (!tutorProfile) {
+        console.log("❌ Tutor auth record not found for:", email);
+        return res.status(401).json({
+          success: false,
+          message: "No tutor account found. Please sign up first."
+        });
+      }
+
+      tutorUser = await Tutoruser.create({
+        name: tutorProfile.name || name,
         email,
         googleId: sub,
-        photo: picture,
+        photo: picture || tutorProfile.profilePhoto || tutorProfile.photo || "",
         role: "tutor"
       });
-      console.log("✅ New Tutoruser created:", { id: user._id, email: user.email });
+      console.log("✅ Created Tutoruser auth record for existing tutor profile:", email);
     } else {
-      console.log("Existing Tutoruser found:", { id: user._id, email: user.email });
+      const updatedFields = {};
+      if (tutorUser.googleId !== sub) updatedFields.googleId = sub;
+      if (picture && tutorUser.photo !== picture) updatedFields.photo = picture;
+      if (name && tutorUser.name !== name) updatedFields.name = name;
+      if (Object.keys(updatedFields).length) {
+        tutorUser = await Tutoruser.findByIdAndUpdate(tutorUser._id, updatedFields, { new: true });
+        console.log("✅ Updated existing Tutoruser with latest Google profile data");
+      }
     }
 
-    // Check if user has completed profile by looking for Tutor document with same email
-    const tutorProfile = await Tutor.findOne({ email });
-    const isProfileComplete = !!tutorProfile;
+    const effectivePhoto = tutorProfile?.profilePhoto || tutorProfile?.photo || tutorUser.photo || picture || "";
 
-    console.log("Profile check for", email, ":", {
-      isProfileComplete,
-      tutorProfileId: tutorProfile?._id,
-      tutorStatus: tutorProfile?.status
-    });
+    console.log("✅ Tutor authenticated:", email);
 
     const jwtToken = jwt.sign(
-      { id: user._id, role: user.role },
+      { id: tutorUser._id, role: tutorUser.role },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
@@ -89,16 +170,18 @@ router.post("/google-login", async (req, res) => {
       success: true,
       token: jwtToken,
       user: {
-        _id: user._id,
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        photo: user.photo,
-        googleId: user.googleId,
-        role: user.role,
+        _id: tutorUser._id,
+        id: tutorUser._id,
+        name: tutorUser.name,
+        email: tutorUser.email,
+        photo: effectivePhoto,
+        profilePhoto: effectivePhoto,
+        googleId: tutorUser.googleId,
+        role: tutorUser.role,
       },
-      isProfileComplete,
-      status: tutorProfile?.status || null
+      isProfileComplete: !!tutorProfile,
+      status: tutorProfile?.status || null,
+      message: "Tutor login successful"
     });
 
   } catch (err) {
@@ -106,6 +189,75 @@ router.post("/google-login", async (req, res) => {
     res.status(401).json({
       success: false,
       message: "Google login failed"
+    });
+  }
+});
+
+// 🔐 Email/Password Login for Tutors - STRICT LOGIN (No Auto-Create)
+router.post("/email-login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Email and password are required"
+      });
+    }
+
+    console.log("🔐 Email Login - Tutor for:", email);
+
+    // STRICT: Only authenticate if Tutor profile exists
+    const tutorProfile = await Tutor.findOne({ email });
+
+    if (!tutorProfile) {
+      console.log("❌ Tutor profile not found:", email);
+      return res.status(401).json({
+        success: false,
+        message: "No tutor account found. Please create an account first."
+      });
+    }
+
+    // Check password (in production, use bcrypt)
+    if (tutorProfile.password !== password) {
+      console.log("❌ Incorrect password for:", email);
+      return res.status(401).json({
+        success: false,
+        message: "Invalid email or password"
+      });
+    }
+
+    console.log("✅ Tutor authenticated:", email);
+
+    const effectivePhoto = tutorProfile?.profilePhoto || tutorProfile?.photo || "";
+
+    const jwtToken = jwt.sign(
+      { id: tutorProfile._id, role: "tutor" },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    res.json({
+      success: true,
+      token: jwtToken,
+      user: {
+        _id: tutorProfile._id,
+        id: tutorProfile._id,
+        name: tutorProfile.name,
+        email: tutorProfile.email,
+        photo: effectivePhoto,
+        profilePhoto: effectivePhoto,
+        role: "tutor",
+      },
+      isProfileComplete: true,
+      status: tutorProfile?.status || null
+    });
+
+  } catch (err) {
+    console.error("❌ Email Login Error:", err.message);
+    res.status(500).json({
+      success: false,
+      message: "Login failed. Please try again."
     });
   }
 });

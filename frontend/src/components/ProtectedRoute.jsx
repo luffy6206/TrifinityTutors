@@ -7,6 +7,19 @@ function ProtectedRoute({ children }) {
   const stored = getStoredAuth();
   const token = auth?.token || stored.token;
   const user = auth?.user || stored.user;
+  const loading = auth?.loading || false;
+
+  // Show loading spinner while auth is restoring
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          <p className="mt-4 text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!token || !user) {
     return <Navigate to="/auth/login" replace />;

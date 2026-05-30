@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+﻿import { Link, useNavigate } from "react-router-dom";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { io as ioClient } from "socket.io-client";
 import { useAuth } from "@/lib/auth";
@@ -21,7 +21,7 @@ const nav = [
 
 function StudentDashboard() {
   const navigate = useNavigate();
-  const { user, token } = useAuth();
+  const { user, token, loading } = useAuth();
   const [savedTutors, setSavedTutors] = useState([]);
   const [bookings, setBookings] = useState([]);
   const [bookingError, setBookingError] = useState(null);
@@ -138,8 +138,20 @@ function StudentDashboard() {
 
   const userName = user?.name || "Student";
 
+  // Show loading spinner while auth is restoring or data is loading
+  if (loading || !user) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          <p className="mt-4 text-muted-foreground">Loading your dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <DashboardShell navItems={nav} title={`Welcome back, ${userName} 👋`} role="Student">
+    <DashboardShell navItems={nav} title={`Welcome back, ${userName} ðŸ‘‹`} role="Student">
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard label="Active sessions" value="3" delta="+1 this week" icon={BookOpen} />
         <StatCard label="Saved tutors" value={String(savedTutors.length)} icon={Heart} accent="success" />
@@ -159,12 +171,12 @@ function StudentDashboard() {
             </div>
           </div>
           {bookingLoading ? (
-            <div className="rounded-3xl border border-dashed border-slate-200 p-10 text-center text-sm text-slate-500">Loading sessions…</div>
+            <div className="rounded-3xl border border-dashed border-slate-200 p-10 text-center text-sm text-slate-500">Loading sessionsâ€¦</div>
           ) : (
             <SessionCalendar bookings={bookings} role="Student" />
           )}
           {bookingError && (
-            <div className="mt-4 rounded-3xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">{bookingError}</div>
+            <div className="mt-4 rounded-3xl border border-rose-200 bg-emerald-50 p-4 text-sm text-rose-700">{bookingError}</div>
           )}
         </Card>
       </div>
@@ -179,16 +191,16 @@ function StudentDashboard() {
           </div>
           <div className="space-y-3">
             {[
-              { name: "Ananya Rao", subject: "Calculus II", time: "Today · 4:00 PM", status: "Upcoming", color: "from-blue-400 to-indigo-500" },
-              { name: "Rahul Verma", subject: "Mechanics", time: "Tomorrow · 6:00 PM", status: "Confirmed", color: "from-emerald-400 to-teal-500" },
-              { name: "Sara Iqbal", subject: "Essay Writing", time: "Fri · 11:00 AM", status: "Pending", color: "from-rose-400 to-pink-500" },
+              { name: "Ananya Rao", subject: "Calculus II", time: "Today Â· 4:00 PM", status: "Upcoming", color: "from-blue-400 to-indigo-500" },
+              { name: "Rahul Verma", subject: "Mechanics", time: "Tomorrow Â· 6:00 PM", status: "Confirmed", color: "from-emerald-400 to-teal-500" },
+              { name: "Sara Iqbal", subject: "Essay Writing", time: "Fri Â· 11:00 AM", status: "Pending", color: "from-rose-400 to-pink-500" },
               { name: "Daniel Cohen", subject: "Python Basics", time: "Last week", status: "Completed", color: "from-amber-400 to-orange-500" },
             ].map((b,i)=>(
               <div key={i} className="flex items-center gap-4 rounded-xl border border-border p-4 hover:bg-accent/40 transition">
                 <div className={`h-11 w-11 shrink-0 rounded-xl bg-gradient-to-br ${b.color}`} />
                 <div className="flex-1 min-w-0">
                   <div className="font-semibold truncate">{b.name}</div>
-                  <div className="text-sm text-muted-foreground truncate">{b.subject} · {b.time}</div>
+                  <div className="text-sm text-muted-foreground truncate">{b.subject} Â· {b.time}</div>
                 </div>
                 <Badge variant={b.status === "Completed" ? "secondary" : "default"} className={
                   b.status === "Upcoming" ? "bg-gradient-primary border-0" :
@@ -267,3 +279,4 @@ function StudentDashboard() {
 }
 
 export default StudentDashboard;
+

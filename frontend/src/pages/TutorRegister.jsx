@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+﻿import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import "./TutorRegister.css"
 
@@ -85,7 +85,7 @@ function TutorRegister() {
       const data = await response.json()
 
       if (response.ok && data.success) {
-        console.log("✅ Registration successful, tutor created:", data.tutor?._id)
+        console.log("âœ… Registration successful, tutor created:", data.tutor?._id)
         
         // Update localStorage with the newly created tutor data
         const currentTutor = JSON.parse(localStorage.getItem("tutor") || "{}")
@@ -97,21 +97,21 @@ function TutorRegister() {
             profileComplete: true
           }
           localStorage.setItem("tutor", JSON.stringify(updatedTutor))
-          console.log("📝 Updated tutor data in localStorage:", { id: data.tutor._id, email: data.tutor.email })
+          console.log("ðŸ“ Updated tutor data in localStorage:", { id: data.tutor._id, email: data.tutor.email })
         }
         
         // Show success message (brief alert then redirect)
-        alert("✅ Registration successful! Redirecting to dashboard...")
+        alert("âœ… Registration successful! Redirecting to dashboard...")
         
         // Redirect to tutor dashboard after successful registration
         navigate("/tutor-dashboard", { replace: true })
       } else {
-        console.error("❌ Registration failed:", data.message)
-        alert("❌ " + (data.message || "Registration failed. Please try again."))
+        console.error("âŒ Registration failed:", data.message)
+        alert("âŒ " + (data.message || "Registration failed. Please try again."))
       }
     } catch (error) {
-      console.error("❌ Registration error:", error)
-      alert("❌ Error registering tutor: " + error.message)
+      console.error("âŒ Registration error:", error)
+      alert("âŒ Error registering tutor: " + error.message)
     } finally {
       setIsLoading(false)
     }
@@ -128,7 +128,7 @@ function TutorRegister() {
         <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 border border-gray-100">
           <div className="register-header text-center mb-10">
             <div className="w-16 h-16 bg-gradient-to-br from-green-600 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-              <span className="text-white text-3xl">👨‍🏫</span>
+              <span className="text-white text-3xl">ðŸ‘¨â€ðŸ«</span>
             </div>
             <h1 className="text-4xl font-bold text-gray-900 mb-3">Tutor Registration</h1>
             <p className="subtitle text-gray-600 text-lg">Complete your profile to start tutoring</p>
@@ -137,7 +137,7 @@ function TutorRegister() {
           <form onSubmit={handleSubmit} className="register-form space-y-6">
 
             <div className="form-group">
-              <label htmlFor="name" className="block text-sm font-bold text-gray-900 mb-2">👤 Full Name *</label>
+              <label htmlFor="name" className="block text-sm font-bold text-gray-900 mb-2">ðŸ‘¤ Full Name *</label>
               <input
                 id="name"
                 name="name"
@@ -149,11 +149,11 @@ function TutorRegister() {
                   errors.name ? "border-red-500" : "border-gray-300"
                 }`}
               />
-              {errors.name && <span className="text-red-600 text-sm font-medium mt-1 inline-block">❌ {errors.name}</span>}
+              {errors.name && <span className="text-red-600 text-sm font-medium mt-1 inline-block">âŒ {errors.name}</span>}
             </div>
 
             <div className="form-group">
-              <label htmlFor="email" className="block text-sm font-bold text-gray-900 mb-2">📧 Email Address *</label>
+              <label htmlFor="email" className="block text-sm font-bold text-gray-900 mb-2">ðŸ“§ Email Address *</label>
               <input
                 id="email"
                 name="email"
@@ -164,12 +164,12 @@ function TutorRegister() {
                 required
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white text-gray-900 hover:border-gray-400 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
               />
-              {errors.email && <span className="text-red-600 text-sm font-medium mt-1 inline-block">❌ {errors.email}</span>}
+              {errors.email && <span className="text-red-600 text-sm font-medium mt-1 inline-block">âŒ {errors.email}</span>}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="form-group">
-                <label htmlFor="subject" className="block text-sm font-bold text-gray-900 mb-2">📚 Subject *</label>
+                <label htmlFor="subject" className="block text-sm font-bold text-gray-900 mb-2">ðŸ“š Subject *</label>
                 <input
                   id="subject"
                   name="subject"
@@ -181,11 +181,11 @@ function TutorRegister() {
                     errors.subject ? "border-red-500" : "border-gray-300"
                   }`}
                 />
-                {errors.subject && <span className="text-red-600 text-sm font-medium mt-1 inline-block">❌ {errors.subject}</span>}
+                {errors.subject && <span className="text-red-600 text-sm font-medium mt-1 inline-block">âŒ {errors.subject}</span>}
               </div>
 
               <div className="form-group">
-                <label htmlFor="experience" className="block text-sm font-bold text-gray-900 mb-2">⭐ Experience (Years) *</label>
+                <label htmlFor="experience" className="block text-sm font-bold text-gray-900 mb-2">â­ Experience (Years) *</label>
                 <input
                   id="experience"
                   name="experience"
@@ -198,13 +198,13 @@ function TutorRegister() {
                     errors.experience ? "border-red-500" : "border-gray-300"
                   }`}
                 />
-                {errors.experience && <span className="text-red-600 text-sm font-medium mt-1 inline-block">❌ {errors.experience}</span>}
+                {errors.experience && <span className="text-red-600 text-sm font-medium mt-1 inline-block">âŒ {errors.experience}</span>}
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="form-group">
-                <label htmlFor="locality" className="block text-sm font-bold text-gray-900 mb-2">📍 Locality *</label>
+                <label htmlFor="locality" className="block text-sm font-bold text-gray-900 mb-2">ðŸ“ Locality *</label>
                 <input
                   id="locality"
                   name="locality"
@@ -216,11 +216,11 @@ function TutorRegister() {
                     errors.locality ? "border-red-500" : "border-gray-300"
                   }`}
                 />
-                {errors.locality && <span className="text-red-600 text-sm font-medium mt-1 inline-block">❌ {errors.locality}</span>}
+                {errors.locality && <span className="text-red-600 text-sm font-medium mt-1 inline-block">âŒ {errors.locality}</span>}
               </div>
 
               <div className="form-group">
-                <label htmlFor="phone" className="block text-sm font-bold text-gray-900 mb-2">📞 Phone Number *</label>
+                <label htmlFor="phone" className="block text-sm font-bold text-gray-900 mb-2">ðŸ“ž Phone Number *</label>
                 <input
                   id="phone"
                   name="phone"
@@ -233,7 +233,7 @@ function TutorRegister() {
                     errors.phone ? "border-red-500" : "border-gray-300"
                   }`}
                 />
-                {errors.phone && <span className="text-red-600 text-sm font-medium mt-1 inline-block">❌ {errors.phone}</span>}
+                {errors.phone && <span className="text-red-600 text-sm font-medium mt-1 inline-block">âŒ {errors.phone}</span>}
               </div>
             </div>
 
@@ -242,14 +242,14 @@ function TutorRegister() {
               disabled={isLoading}
               className="w-full px-4 py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg font-bold text-lg hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-0.5 mt-8"
             >
-              {isLoading ? "🔄 Registering..." : "✅ Register as Tutor"}
+              {isLoading ? "ðŸ”„ Registering..." : "âœ… Register as Tutor"}
             </button>
 
           </form>
 
           <div className="mt-8 pt-8 border-t border-gray-200">
             <p className="text-center text-gray-600">
-              Already registered? <a href="/tutor-login" className="text-green-600 hover:text-green-700 font-bold">Sign in here</a>
+              Already registered? <a href="/tutor-login" className="text-emerald-600 hover:text-green-700 font-bold">Sign in here</a>
             </p>
           </div>
         </div>
@@ -257,9 +257,9 @@ function TutorRegister() {
         {/* Benefits */}
         <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
           {[
-            { icon: "💰", title: "Earn Money", desc: "Set your own rates" },
-            { icon: "🕐", title: "Flexible Hours", desc: "Work at your pace" },
-            { icon: "🌟", title: "Help Students", desc: "Make a difference" }
+            { icon: "ðŸ’°", title: "Earn Money", desc: "Set your own rates" },
+            { icon: "ðŸ•", title: "Flexible Hours", desc: "Work at your pace" },
+            { icon: "ðŸŒŸ", title: "Help Students", desc: "Make a difference" }
           ].map((benefit, idx) => (
             <div key={idx} className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover:shadow-md hover:-translate-y-1 transition-all text-center">
               <div className="text-4xl mb-3">{benefit.icon}</div>

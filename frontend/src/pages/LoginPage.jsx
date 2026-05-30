@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+﻿import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router-dom";
@@ -67,7 +67,7 @@ function LoginPage() {
               <Label>Password</Label>
               <a href="#" className="text-xs text-primary hover:underline">Forgot password?</a>
             </div>
-            <Input name="password" autoComplete="current-password" className="mt-2 h-11" placeholder="••••••••" type="password" />
+            <Input name="password" autoComplete="current-password" className="mt-2 h-11" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" type="password" />
           </div>
           <Button type="submit" className="w-full h-11 bg-gradient-primary shadow-glow">
             Log in
@@ -79,3 +79,4 @@ function LoginPage() {
 }
 
 // export default LoginPage;
+
