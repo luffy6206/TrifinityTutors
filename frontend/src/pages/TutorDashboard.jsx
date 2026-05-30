@@ -1,6 +1,8 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+﻿import { useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { io as ioClient } from "socket.io-client";
 import { LayoutDashboard, Calendar, Users, DollarSign, BarChart3, Settings, MessageCircle, TrendingUp, Eye, Star, Bell } from "lucide-react";
+import { useAuth } from "@/lib/auth";
 import { DashboardShell, StatCard } from "@/components/DashboardShell";
 import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
@@ -17,6 +19,8 @@ const nav = [
 ];
 
 function TutorDashboard() {
+  const navigate = useNavigate();
+  const { user, token, loading: authLoading } = useAuth();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -26,9 +30,14 @@ function TutorDashboard() {
   const loadData = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem("token");
+      const authToken = token || localStorage.getItem("token");
+      if (!authToken) {
+        setError("Missing authorization token");
+        setLoading(false);
+        return;
+      }
       const res = await fetch("/api/bookings/tutor", {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${authToken}` },
       });
       if (!res.ok) {
         const message = await res.text();
@@ -46,8 +55,15 @@ function TutorDashboard() {
   };
 
   useEffect(() => {
-    loadData();
-  }, []);
+    if (!user) {
+      const storedToken = localStorage.getItem("token");
+      if (!storedToken) {
+        navigate("/auth/login");
+      }
+    } else {
+      loadData();
+    }
+  }, [user, navigate]);
 
   useEffect(() => {
     const endpoint = import.meta.env.DEV ? "http://localhost:5000" : window.location.origin;
@@ -101,10 +117,22 @@ function TutorDashboard() {
   const upcomingSessions = upcoming.slice(0, 3);
   const recentBookings = bookings.slice(0, 3);
 
+  // Show loading spinner while auth is restoring or data is loading
+  if (authLoading || !user) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          <p className="mt-4 text-muted-foreground">Loading your dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <DashboardShell navItems={nav} title="Tutor Dashboard" role="Tutor">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard label="This month earnings" value={`₹${monthEarnings.toFixed(0)}`} delta="Updated" icon={DollarSign} accent="success" />
+        <StatCard label="This month earnings" value={`â‚¹${monthEarnings.toFixed(0)}`} delta="Updated" icon={DollarSign} accent="success" />
         <StatCard label="Active students" value={`${activeStudentsCount}`} delta="Active now" icon={Users} />
         <StatCard label="Upcoming sessions" value={`${upcoming.length}`} delta="Booked" icon={Calendar} accent="warning" />
         <StatCard label="Profile views" value="1.2k" delta="+24%" icon={Eye} />
@@ -152,7 +180,7 @@ function TutorDashboard() {
                   <div className="flex items-center justify-between gap-4">
                     <div>
                       <div className="text-sm font-semibold text-gray-900">{booking.studentId?.name || booking.studentName || 'Student'}</div>
-                      <div className="text-xs text-gray-500">{booking.subject} · {booking.date} · {booking.time}</div>
+                      <div className="text-xs text-gray-500">{booking.subject} Â· {booking.date} Â· {booking.time}</div>
                     </div>
                     <Badge
                       className={`rounded-full px-3 py-1 text-xs ${
@@ -182,7 +210,7 @@ function TutorDashboard() {
             </div>
           </div>
           {loading ? (
-            <div className="text-sm text-slate-500">Loading schedule…</div>
+            <div className="text-sm text-slate-500">Loading scheduleâ€¦</div>
           ) : upcomingSessions.length === 0 ? (
             <div className="rounded-xl border border-dashed border-gray-200 p-6 text-sm text-slate-500">No upcoming sessions yet</div>
           ) : (
@@ -193,7 +221,7 @@ function TutorDashboard() {
                     <div className="text-sm font-semibold text-gray-900">{booking.time.split(" ")[0]}</div>
                     <div className="text-xs text-gray-500">{booking.time.split(" ")[1]}</div>
                   </div>
-                  <div className="h-1 w-1 rounded-full bg-blue-500 self-stretch" />
+                  <div className="h-1 w-1 rounded-full bg-indigo-500 self-stretch" />
                   <div className="flex-1">
                     <div className="font-medium text-sm text-gray-900">{booking.subject}</div>
                     <div className="text-xs text-gray-500">with {booking.studentId?.name || booking.studentName || 'Student'}</div>
@@ -215,7 +243,7 @@ function TutorDashboard() {
                 <span className="font-semibold text-gray-900">92%</span>
               </div>
               <div className="h-2 rounded-full bg-gray-200 overflow-hidden">
-                <div className="h-full bg-blue-600 rounded-full" style={{ width: "92%" }} />
+                <div className="h-full bg-indigo-700 rounded-full" style={{ width: "92%" }} />
               </div>
             </div>
             <div>
@@ -224,7 +252,7 @@ function TutorDashboard() {
                 <span className="font-semibold text-gray-900">98%</span>
               </div>
               <div className="h-2 rounded-full bg-gray-200 overflow-hidden">
-                <div className="h-full bg-green-500 rounded-full" style={{ width: "98%" }} />
+                <div className="h-full bg-emerald-500 rounded-full" style={{ width: "98%" }} />
               </div>
             </div>
             <div>
@@ -240,7 +268,7 @@ function TutorDashboard() {
             </div>
           </div>
           <div className="mt-6 rounded-xl bg-gradient-to-r from-slate-50 via-slate-100 to-slate-50 p-4 flex items-center gap-3">
-            <Bell className="h-4 w-4 text-blue-600" />
+            <Bell className="h-4 w-4 text-indigo-700" />
             <p className="text-xs text-slate-600">Respond quickly to new booking requests to keep your schedule full.</p>
           </div>
         </Card>

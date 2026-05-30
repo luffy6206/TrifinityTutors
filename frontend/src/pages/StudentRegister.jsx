@@ -1,4 +1,4 @@
-import { useState } from "react"
+﻿import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { GoogleLogin } from "@react-oauth/google"
 import "./StudentRegister.css"
@@ -54,7 +54,7 @@ function StudentRegister() {
     
     // Validate all fields
     if (!form.name.trim() || !form.class.trim() || !form.subject.trim() || !form.locality.trim() || !form.board || !form.phoneNumber.trim() || !form.exactAddress.trim()) {
-      alert("❌ Please fill all fields")
+      alert("âŒ Please fill all fields")
       return
     }
     
@@ -76,7 +76,7 @@ function StudentRegister() {
         throw new Error(data.error || data.message || "Failed to submit")
       }
 
-      alert("✅ Student request submitted successfully!")
+      alert("âœ… Student request submitted successfully!")
 
       // reset form
       setForm({
@@ -93,7 +93,7 @@ function StudentRegister() {
       navigate("/dashboard/student")
     } catch (error) {
       console.error("Submit error:", error)
-      alert("❌ Error submitting form: " + error.message)
+      alert("âŒ Error submitting form: " + error.message)
     } finally {
       setIsLoading(false)
     }
@@ -109,8 +109,8 @@ function StudentRegister() {
         {/* Card */}
         <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 border border-gray-100">
           <div className="register-header text-center mb-10">
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-              <span className="text-white text-3xl">👨‍🎓</span>
+            <div className="w-16 h-16 bg-gradient-to-br from-indigo-700 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+              <span className="text-white text-3xl">ðŸ‘¨â€ðŸŽ“</span>
             </div>
             <h1 className="text-4xl font-bold text-gray-900 mb-3">Student Registration</h1>
             <p className="subtitle text-gray-600 text-lg">Find the perfect tutor for your learning journey</p>
@@ -133,7 +133,7 @@ function StudentRegister() {
           <form onSubmit={handleSubmit} className="register-form space-y-6">
 
             <div className="form-group">
-              <label htmlFor="name" className="block text-sm font-bold text-gray-900 mb-2">👤 Full Name *</label>
+              <label htmlFor="name" className="block text-sm font-bold text-gray-900 mb-2">ðŸ‘¤ Full Name *</label>
               <input
                 id="name"
                 name="name"
@@ -147,7 +147,7 @@ function StudentRegister() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="form-group">
-                <label htmlFor="class" className="block text-sm font-bold text-gray-900 mb-2">📚 Grade/Class *</label>
+                <label htmlFor="class" className="block text-sm font-bold text-gray-900 mb-2">ðŸ“š Grade/Class *</label>
                 <input
                   id="class"
                   name="class"
@@ -160,7 +160,7 @@ function StudentRegister() {
               </div>
 
               <div className="form-group">
-                <label htmlFor="subject" className="block text-sm font-bold text-gray-900 mb-2">🔬 Subject *</label>
+                <label htmlFor="subject" className="block text-sm font-bold text-gray-900 mb-2">ðŸ”¬ Subject *</label>
                 <input
                   id="subject"
                   name="subject"
@@ -175,7 +175,7 @@ function StudentRegister() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="form-group">
-                <label htmlFor="locality" className="block text-sm font-bold text-gray-900 mb-2">📍 Locality *</label>
+                <label htmlFor="locality" className="block text-sm font-bold text-gray-900 mb-2">ðŸ“ Locality *</label>
                 <input
                   id="locality"
                   name="locality"
@@ -188,7 +188,7 @@ function StudentRegister() {
               </div>
 
               <div className="form-group">
-                <label htmlFor="board" className="block text-sm font-bold text-gray-900 mb-2">🎓 Board *</label>
+                <label htmlFor="board" className="block text-sm font-bold text-gray-900 mb-2">ðŸŽ“ Board *</label>
                 <select
                   id="board"
                   name="board"
@@ -207,7 +207,7 @@ function StudentRegister() {
             </div>
 
             <div className="form-group">
-              <label htmlFor="phoneNumber" className="block text-sm font-bold text-gray-900 mb-2">📞 Phone Number *</label>
+              <label htmlFor="phoneNumber" className="block text-sm font-bold text-gray-900 mb-2">ðŸ“ž Phone Number *</label>
               <input
                 id="phoneNumber"
                 name="phoneNumber"
@@ -221,7 +221,7 @@ function StudentRegister() {
             </div>
 
             <div className="form-group">
-              <label htmlFor="exactAddress" className="block text-sm font-bold text-gray-900 mb-2">🏠 Exact Address *</label>
+              <label htmlFor="exactAddress" className="block text-sm font-bold text-gray-900 mb-2">ðŸ  Exact Address *</label>
               <textarea
                 id="exactAddress"
                 name="exactAddress"
@@ -237,16 +237,16 @@ function StudentRegister() {
             <button 
               type="submit" 
               disabled={isLoading}
-              className="w-full px-4 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg font-bold text-lg hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-0.5 mt-8"
+              className="w-full px-4 py-4 bg-gradient-to-r from-indigo-700 to-indigo-600 text-white rounded-lg font-bold text-lg hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-0.5 mt-8"
             >
-              {isLoading ? "🔄 Submitting..." : "✅ Submit Request"}
+              {isLoading ? "ðŸ”„ Submitting..." : "âœ… Submit Request"}
             </button>
 
           </form>
 
           <div className="mt-8 pt-8 border-t border-gray-200">
             <p className="text-center text-gray-600">
-              Already submitted? <a href="/" className="text-blue-600 hover:text-blue-700 font-bold">Back to home</a>
+              Already submitted? <a href="/" className="text-indigo-700 hover:text-indigo-800 font-bold">Back to home</a>
             </p>
           </div>
         </div>
@@ -254,9 +254,9 @@ function StudentRegister() {
         {/* Features */}
         <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
           {[
-            { icon: "⚡", title: "Quick Match", desc: "Find tutors in minutes" },
-            { icon: "🔒", title: "Safe & Secure", desc: "Verified tutors only" },
-            { icon: "💬", title: "Easy Communication", desc: "Direct messaging support" }
+            { icon: "âš¡", title: "Quick Match", desc: "Find tutors in minutes" },
+            { icon: "ðŸ”’", title: "Safe & Secure", desc: "Verified tutors only" },
+            { icon: "ðŸ’¬", title: "Easy Communication", desc: "Direct messaging support" }
           ].map((feature, idx) => (
             <div key={idx} className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover:shadow-md hover:-translate-y-1 transition-all text-center">
               <div className="text-4xl mb-3">{feature.icon}</div>

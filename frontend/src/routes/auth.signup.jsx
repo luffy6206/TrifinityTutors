@@ -29,7 +29,7 @@ function SignupPage() {
         throw new Error("Google authentication failed.");
       }
 
-      const endpoint = role === "tutor" ? "/api/tutors/google-login" : "/api/students/google-signup";
+      const endpoint = role === "tutor" ? "/api/tutors/google-signup" : "/api/students/google-signup";
       const response = await fetch(`http://localhost:5000${endpoint}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
