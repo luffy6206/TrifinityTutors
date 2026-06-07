@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useNavigate } from "react-router-dom";
 import { DashLayout } from "@/components/dash/DashLayout";
 import { Card } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/Switch ";
 import { Label } from "@/components/ui/Label";
 import { Home, User as UserIcon, Settings as SettingsIcon, Bell, Shield, Trash2 } from "lucide-react";

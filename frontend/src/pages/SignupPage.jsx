@@ -4,7 +4,7 @@ import { GraduationCap, Users, Check } from "lucide-react";
 import { GoogleLogin } from "@react-oauth/google";
 import { verifyTutorProfileAndDecide } from "@/lib/auth-helpers";
 import { apiFetch } from '@/lib/api'
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/Input";
 
 function SignupPage() {

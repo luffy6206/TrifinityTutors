@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
 import { Check, Upload, ArrowRight, ArrowLeft, User, GraduationCap, BookOpen, DollarSign } from "lucide-react";
 import { SiteLayout } from "@/components/SiteLayout";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/Label";

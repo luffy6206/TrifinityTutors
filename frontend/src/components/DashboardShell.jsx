@@ -5,7 +5,7 @@ import { GraduationCap, Bell, Search } from "lucide-react";
 import { io as ioClient } from "socket.io-client";
 import { Toaster, toast } from 'sonner';
 import { Input } from "@/components/ui/Input";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button";
 import { ProfileDropdown } from "@/components/ProfileDropdown";
 import { apiFetch, API_BASE } from '@/lib/api'
 
