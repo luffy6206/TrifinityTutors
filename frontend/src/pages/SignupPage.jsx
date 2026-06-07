@@ -3,7 +3,7 @@ import { useState } from "react";
 import { GraduationCap, Users, Check } from "lucide-react";
 import { GoogleLogin } from "@react-oauth/google";
 import { verifyTutorProfileAndDecide } from "@/lib/auth-helpers";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 function SignupPage() {
