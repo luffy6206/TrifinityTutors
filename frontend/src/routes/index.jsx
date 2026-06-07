@@ -6,7 +6,7 @@ import {
   Star, Calculator, FlaskConical, Code2, Languages, Music, Palette,
   BookOpen, ChevronDown, ChevronLeft, ChevronRight, Check, Quote,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";

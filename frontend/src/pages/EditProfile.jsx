@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/auth'
 import StudentAvatar from '@/components/StudentAvatar'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/components/ui/Button'
 import { useNavigate } from 'react-router-dom'
 
 export default function EditProfile(){
