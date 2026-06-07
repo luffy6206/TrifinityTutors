@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { DashLayout } from "@/components/dash/DashLayout";
-import { Card } from "@/components/ui/card";
+import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/Badge";
 import { Home, Calendar, MessageSquare, Bell, Video, MapPin, Star } from "lucide-react";
 import { useAuth, dashboardPathFor } from "@/lib/auth";
 import { useState } from "react";

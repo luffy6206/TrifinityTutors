@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/Input";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Checkbox } from "@/components/ui/Checkbox";
-import { Slider } from "@/components/ui/Slider";
+import { Slider } from "@/components/ui/slider";
 export const Route = createFileRoute("/tutors")({
   component: TutorsPage,
   head: () => ({ meta: [{ title: "Browse Tutors — Trifinity" }, { name: "description", content: "Browse verified college tutors by subject, rating, location, and price." }] }),

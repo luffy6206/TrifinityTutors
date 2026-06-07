@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { DashLayout } from "@/components/dash/DashLayout";
-import { Card } from "@/components/ui/card";
+import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/Badge";
 import { Home, Calendar, MessageSquare, Bell, Video, MapPin, ArrowRight, XCircle, CheckCircle, RefreshCw } from "lucide-react";
 import { useAuth, dashboardPathFor } from "@/lib/auth";
 import { apiFetch, API_BASE } from '@/lib/api'

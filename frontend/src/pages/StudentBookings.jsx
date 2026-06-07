@@ -3,8 +3,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/lib/auth";
 import { LayoutDashboard, Search, Heart, Calendar, Bell, MessageCircle, Settings, MapPin, ExternalLink } from "lucide-react";
 import { DashboardShell } from "@/components/DashboardShell";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/Card";
+import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/button";
 
 const nav = [

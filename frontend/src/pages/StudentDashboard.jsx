@@ -5,9 +5,9 @@ import { useAuth } from "@/lib/auth";
 import { apiFetch, API_BASE } from '@/lib/api'
 import { LayoutDashboard, Search, Heart, Calendar, Bell, MessageCircle, Settings, BookOpen, Star, Clock } from "lucide-react";
 import { DashboardShell, StatCard } from "@/components/DashboardShell";
-import { Card } from "@/components/ui/card";
+import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/Badge";
 import SessionCalendar from "@/components/SessionCalendar";
 
 const nav = [
