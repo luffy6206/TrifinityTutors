@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { LayoutDashboard, Calendar, Users, DollarSign, BarChart3, Settings, MessageCircle, TrendingUp, Eye, Star, Bell } from "lucide-react";
 import { DashboardShell, StatCard } from "@/components/DashboardShell";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Badge";
 
 export const Route = createFileRoute("/dashboard/tutor")({
   component: TutorDashboard,

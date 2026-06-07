@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, MapPin, Star } from "lucide-react";
 import axios from "axios";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { apiUrl } from "@/lib/api";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
 
 const timeSlots = ["09:00", "10:30", "12:00", "14:00", "15:30", "17:00", "18:30", "20:00"];
 
@@ -47,7 +48,7 @@ function BookingSession() {
     const fetchTutor = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`http://localhost:5000/api/tutors/profile/${id}`);
+        const response = await axios.get(apiUrl(`/api/tutors/profile/${id}`));
         setTutor(response.data);
         setError("");
       } catch (err) {

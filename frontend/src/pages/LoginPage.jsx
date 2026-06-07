@@ -1,9 +1,10 @@
-﻿import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+﻿import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Label } from "@/components/ui/Label";
 import { useNavigate } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
 import { verifyTutorProfileAndDecide } from "@/lib/auth-helpers";
+import { apiFetch } from "@/lib/api";
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -16,7 +17,7 @@ function LoginPage() {
   const handleGoogleLogin = async (credentialResponse) => {
     try {
       // Try tutor login first
-      const tutorResponse = await fetch("http://localhost:5000/api/tutors/google-login", {
+      const tutorResponse = await apiFetch("/api/tutors/google-login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token: credentialResponse.credential })

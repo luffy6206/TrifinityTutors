@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/auth'
+import { apiFetch } from '@/lib/api'
 import StudentAvatar from '@/components/StudentAvatar'
 import { Button } from '@/components/ui/button'
 import { Link, useNavigate } from 'react-router-dom'
@@ -15,7 +16,7 @@ export default function StudentProfile() {
       if (!token) return navigate('/auth/login')
       setLoading(true)
       try {
-        const res = await fetch('http://localhost:5000/api/students/profile', { headers: { Authorization: `Bearer ${token}` } })
+        const res = await apiFetch('/api/students/profile', { headers: { Authorization: `Bearer ${token}` } })
         if (res.ok) {
           const data = await res.json()
           setProfile(data.profile || data.user || data)

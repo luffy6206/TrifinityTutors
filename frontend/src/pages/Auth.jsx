@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom"
 import { useState } from "react"
 import { GoogleLogin } from "@react-oauth/google"
+import { apiFetch } from '@/lib/api'
 
 // Helper function to decode JWT
 const decodeJWT = (token) => {
@@ -66,7 +67,7 @@ function Auth() {
     setLoading(true)
     try {
       const endpoint = role === "student" ? "/api/students/register" : "/api/tutors/register"
-      const response = await fetch(`http://localhost:5000${endpoint}`, {
+      const response = await apiFetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -112,7 +113,7 @@ function Auth() {
       const endpoint = role === "student" ? "/api/students/google-register" : "/api/tutors/google-register"
       
       try {
-        const response = await fetch(`http://localhost:5000${endpoint}`, {
+        const response = await apiFetch(endpoint, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

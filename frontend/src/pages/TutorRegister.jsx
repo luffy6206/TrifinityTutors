@@ -1,6 +1,7 @@
 ﻿import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import "./TutorRegister.css"
+import { apiFetch } from '@/lib/api'
 
 function TutorRegister() {
   const navigate = useNavigate()
@@ -70,7 +71,7 @@ function TutorRegister() {
     setIsLoading(true)
 
     try {
-      const response = await fetch("http://localhost:5000/api/tutors", {
+      const response = await apiFetch('/api/tutors', {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

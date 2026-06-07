@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 import { LayoutDashboard, Users, GraduationCap, DollarSign, Flag, Settings, FileBarChart, TrendingUp, MoreHorizontal, Search, ChevronDown, X } from "lucide-react";
 import { DashboardShell, StatCard } from "@/components/DashboardShell";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Badge";
+import { Input } from "@/components/ui/Input";
 
 const nav = [
   { to: "/admin", label: "Overview", icon: LayoutDashboard },

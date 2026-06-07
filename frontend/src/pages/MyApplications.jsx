@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import axios from "axios"
+import { apiUrl } from "@/lib/api"
 import "./MyApplications.css"
 
 function MyApplications() {
@@ -29,9 +30,7 @@ function MyApplications() {
         tutorStatus: tutor?.status
       });
       
-      const res = await axios.get(
-        `http://localhost:5000/api/students/tutor/${tutor._id}`
-      )
+      const res = await axios.get(apiUrl(`/api/students/tutor/${tutor._id}`))
       
       console.log(`✅ Retrieved ${res.data.length} applications:`, res.data.map(app => ({
         applicationId: app._id,

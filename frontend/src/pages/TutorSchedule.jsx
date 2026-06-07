@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Home, Calendar, MessageSquare, Bell, Video, MapPin, ArrowRight, XCircle, CheckCircle, RefreshCw } from "lucide-react";
 import { useAuth, dashboardPathFor } from "@/lib/auth";
+import { apiFetch, API_BASE } from '@/lib/api'
 import { toast } from "sonner";
 import { io as ioClient } from "socket.io-client";
 
@@ -36,7 +37,7 @@ export default function TutorSchedule() {
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
-      const res = await fetch("/api/bookings/tutor", {
+      const res = await apiFetch('/api/bookings/tutor', {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) {
@@ -59,8 +60,7 @@ export default function TutorSchedule() {
   }, []);
 
   useEffect(() => {
-    const endpoint = import.meta.env.DEV ? "http://localhost:5000" : window.location.origin;
-    const socket = ioClient(endpoint, { transports: ["websocket"] });
+    const socket = ioClient(API_BASE, { transports: ["websocket"] });
     socketRef.current = socket;
     const userId = user?._id || user?.id || user?.userId;
     if (userId) {
@@ -93,7 +93,7 @@ export default function TutorSchedule() {
   const performAction = async (bookingId, action, payload = {}) => {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`/api/bookings/${bookingId}/${action}`, {
+      const res = await apiFetch(`/api/bookings/${bookingId}/${action}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import { apiUrl } from "@/lib/api";
 import "./CompleteProfile.css"
 
 export default function CompleteProfile() {
@@ -25,15 +26,11 @@ export default function CompleteProfile() {
     try {
       setLoading(true);
 
-      await axios.post(
-        "http://localhost:5000/api/tutor/complete-profile",
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      await axios.post(apiUrl(`/api/tutor/complete-profile`), formData, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
 
       alert("Profile completed successfully!");
 

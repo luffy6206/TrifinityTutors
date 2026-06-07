@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Search, MapPin, Star, Heart, ArrowRight, Filter, SlidersHorizontal } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Card } from "@/components/ui/Card";
+import { Badge } from "@/components/ui/Badge";
 import { useAuth } from "@/lib/auth";
+import { apiFetch } from '@/lib/api'
 
 const gradients = [
   "from-blue-400 to-indigo-500",
@@ -97,7 +98,7 @@ function Tutors() {
   useEffect(() => {
     async function fetchTutors() {
       try {
-        const response = await fetch("http://localhost:5000/api/tutors");
+        const response = await apiFetch('/api/tutors');
         const data = await response.json();
 
         console.log("Fetched tutors:", data);
@@ -194,7 +195,7 @@ function Tutors() {
     const method = currentlySaved ? "DELETE" : "POST";
 
     try {
-      const response = await fetch(`http://localhost:5000/api/students/save-tutor/${tutorId}`, {
+      const response = await apiFetch(`/api/students/save-tutor/${tutorId}`, {
         method,
         headers: {
           Authorization: `Bearer ${token}`,

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/auth'
+import { apiFetch } from '@/lib/api'
 import StudentAvatar from '@/components/StudentAvatar'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/components/ui/Button'
 import { useNavigate } from 'react-router-dom'
 
 export default function EditProfile(){
@@ -34,7 +35,7 @@ export default function EditProfile(){
         preferredSubjects: form.preferredSubjects.split(',').map(s=>s.trim()).filter(Boolean),
         location: form.location
       }
-      const res = await fetch('http://localhost:5000/api/students/profile', {
+      const res = await apiFetch('/api/students/profile', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify(body)

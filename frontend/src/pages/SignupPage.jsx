@@ -3,8 +3,9 @@ import { useState } from "react";
 import { GraduationCap, Users, Check } from "lucide-react";
 import { GoogleLogin } from "@react-oauth/google";
 import { verifyTutorProfileAndDecide } from "@/lib/auth-helpers";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { apiFetch } from '@/lib/api'
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 function SignupPage() {
   const [role, setRole] = useState("student");
@@ -30,7 +31,7 @@ function SignupPage() {
       
       if (role === "tutor") {
         // Tutor registration with Google
-        const response = await fetch("http://localhost:5000/api/tutors/google-signup", {
+        const response = await apiFetch("/api/tutors/google-signup", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ token: credentialResponse.credential })
@@ -46,7 +47,7 @@ function SignupPage() {
         }
       } else {
         // Student registration - redirect to student register
-        const response = await fetch("http://localhost:5000/api/students/google-signup", {
+        const response = await apiFetch("/api/students/google-signup", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ token: credentialResponse.credential })

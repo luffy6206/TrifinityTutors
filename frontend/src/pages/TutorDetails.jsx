@@ -52,7 +52,7 @@ function TutorDetails() {
     const fetchTutor = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`http://localhost:5000/api/tutors/profile/${id}`);
+        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/tutors/profile/${id}`);
         setTutor(response.data);
         setError("");
       } catch (err) {

@@ -6,10 +6,10 @@ import {
   Star, Calculator, FlaskConical, Code2, Languages, Music, Palette,
   BookOpen, ChevronDown, ChevronLeft, ChevronRight, Check, Quote,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Card } from "@/components/ui/Card";
+import { Badge } from "@/components/ui/Badge";
 import heroImg from "@/assets/hero-illustration.jpg";
 
 export const Route = createFileRoute("/")({

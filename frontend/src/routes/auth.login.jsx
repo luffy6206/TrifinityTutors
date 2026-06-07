@@ -3,10 +3,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { GraduationCap, Users, Check } from "lucide-react";
 import { GoogleLogin } from "@react-oauth/google";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Label } from "@/components/ui/Label";
 import { useAuth, dashboardPathFor } from "@/lib/auth";
+import { apiFetch } from "@/lib/api";
 import { toast, Toaster } from "sonner";
 
 function LoginPage() {
@@ -38,7 +39,7 @@ function LoginPage() {
           ? "/api/tutors/google-login"
           : "/api/students/google-login";
 
-      const response = await fetch(`http://localhost:5000${endpoint}`, {
+      const response = await apiFetch(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -110,7 +111,7 @@ function LoginPage() {
           ? "/api/tutors/email-login"
           : "/api/students/email-login";
 
-      const response = await fetch(`http://localhost:5000${endpoint}`, {
+      const response = await apiFetch(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

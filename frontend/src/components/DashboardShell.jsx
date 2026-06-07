@@ -4,9 +4,10 @@ import { useAuth } from "@/lib/auth";
 import { GraduationCap, Bell, Search } from "lucide-react";
 import { io as ioClient } from "socket.io-client";
 import { Toaster, toast } from 'sonner';
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
 import { ProfileDropdown } from "@/components/ProfileDropdown";
+import { apiFetch, API_BASE } from '@/lib/api'
 
 export function DashboardShell({ children, navItems, title, role }) {
   const location = useLocation();
@@ -41,7 +42,7 @@ export function DashboardShell({ children, navItems, title, role }) {
       try {
         const token = localStorage.getItem('token');
         if (!token) return;
-        const res = await fetch('/api/notifications', { headers: { Authorization: `Bearer ${token}` } });
+        const res = await apiFetch('/api/notifications', { headers: { Authorization: `Bearer ${token}` } });
         if (!res.ok) return;
         const data = await res.json();
         setUnreadCount(data.unreadCount || 0);
@@ -59,8 +60,7 @@ export function DashboardShell({ children, navItems, title, role }) {
         const token = localStorage.getItem('token');
         if (!token) return;
 
-        const endpoint = import.meta.env.DEV ? 'http://localhost:5000' : window.location.origin;
-        socketRef.current = ioClient(endpoint, { transports: ['websocket'] });
+        socketRef.current = ioClient(API_BASE, { transports: ['websocket'] });
 
         const userId = currentUser?._id || currentUser?.id || currentUser?.userId;
         if (userId) {
@@ -77,7 +77,7 @@ export function DashboardShell({ children, navItems, title, role }) {
           try {
             const token = localStorage.getItem('token');
             if (!token) return;
-            const res = await fetch('/api/notifications', { headers: { Authorization: `Bearer ${token}` } });
+            const res = await apiFetch('/api/notifications', { headers: { Authorization: `Bearer ${token}` } });
             if (!res.ok) return;
             const data = await res.json();
             setNotifications(data.notifications || []);
@@ -93,7 +93,7 @@ export function DashboardShell({ children, navItems, title, role }) {
           try {
             const token = localStorage.getItem('token');
             if (!token) return;
-            const res = await fetch('/api/notifications', { headers: { Authorization: `Bearer ${token}` } });
+            const res = await apiFetch('/api/notifications', { headers: { Authorization: `Bearer ${token}` } });
             if (!res.ok) return;
             const data = await res.json();
             setNotifications(data.notifications || []);
@@ -109,7 +109,7 @@ export function DashboardShell({ children, navItems, title, role }) {
           try {
             const token = localStorage.getItem('token');
             if (!token) return;
-            const res = await fetch('/api/notifications', { headers: { Authorization: `Bearer ${token}` } });
+            const res = await apiFetch('/api/notifications', { headers: { Authorization: `Bearer ${token}` } });
             if (!res.ok) return;
             const data = await res.json();
             setNotifications(data.notifications || []);
@@ -121,7 +121,7 @@ export function DashboardShell({ children, navItems, title, role }) {
           try {
             const token = localStorage.getItem('token');
             if (!token) return;
-            const res = await fetch('/api/notifications', { headers: { Authorization: `Bearer ${token}` } });
+            const res = await apiFetch('/api/notifications', { headers: { Authorization: `Bearer ${token}` } });
             if (!res.ok) return;
             const data = await res.json();
             setNotifications(data.notifications || []);

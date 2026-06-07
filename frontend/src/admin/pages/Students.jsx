@@ -12,7 +12,7 @@ export default function Students() {
 
   const fetchStudents = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/students/with-applications", {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/students/with-applications`, {
         headers: {
           Authorization: localStorage.getItem("token")
         }
@@ -30,7 +30,7 @@ export default function Students() {
   const deleteStudent = async (id) => {
     if (!window.confirm("Are you sure you want to delete this student?")) return;
 
-    await fetch(`http://localhost:5000/api/students/${id}`, {
+    await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/students/${id}`, {
       method: "DELETE",
       headers: {
         Authorization: localStorage.getItem("token")
@@ -41,7 +41,7 @@ export default function Students() {
   };
 
   const addStudent = async () => {
-    await fetch("http://localhost:5000/api/students/student", {
+    await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/students/student`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -62,7 +62,7 @@ export default function Students() {
 
   const approveTutor = async (id) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/students/approve/${id}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/students/approve/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -86,7 +86,7 @@ export default function Students() {
 
   const rejectTutor = async (id) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/students/reject/${id}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/students/reject/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

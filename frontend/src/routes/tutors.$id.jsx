@@ -2,9 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Star, MapPin, Calendar, MessageCircle, Award, Clock, GraduationCap, Languages, CheckCircle2, ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { Badge } from "@/components/ui/Badge";
 import { SiteLayout } from "@/components/SiteLayout";
 
 export const Route = createFileRoute("/tutors/$id")({

@@ -4,12 +4,13 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
 import { Check, Upload, ArrowRight, ArrowLeft, User, GraduationCap, BookOpen, DollarSign } from "lucide-react";
 import { SiteLayout } from "@/components/SiteLayout";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/Label";
+import { Card } from "@/components/ui/Card";
+import { Badge } from "@/components/ui/Badge";
+import { apiUrl } from '@/lib/api'
 
 export const Route = createFileRoute("/register-tutor")({
   component: RegisterTutorPage,
@@ -189,7 +190,7 @@ function RegisterTutorPage() {
       }
       documents.forEach((file) => payload.append("documents", file));
 
-      const response = await fetch("http://localhost:5000/api/tutors/complete-profile", {
+      const response = await fetch(apiUrl('/api/tutors/complete-profile'), {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

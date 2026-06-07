@@ -74,7 +74,7 @@ export function AuthProvider({ children }) {
           ? `/api/tutors/profile/${storedUser.id || storedUser._id}`
           : "/api/students/me";
 
-        const res = await fetch(`http://localhost:5000${endpoint}`, {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}${endpoint}`, {
           headers: { Authorization: `Bearer ${storedToken}` },
         });
 
@@ -129,7 +129,7 @@ export function AuthProvider({ children }) {
         ? `/api/tutors/profile/${storedUser.id || storedUser._id}`
         : "/api/students/me";
 
-      const res = await fetch(`http://localhost:5000${endpoint}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}${endpoint}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) return null;

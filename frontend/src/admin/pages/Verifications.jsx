@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
+import { apiFetch, apiUrl } from '@/lib/api'
 import "../styles/AdminVerifications.css";
 
 export default function Verifications() {
@@ -22,7 +23,7 @@ export default function Verifications() {
 
   const fetchAllTutorsForCounts = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/tutors/verifications", {
+      const res = await apiFetch('/api/tutors/verifications', {
         headers: {
           Authorization: localStorage.getItem("token")
         }
@@ -39,7 +40,7 @@ export default function Verifications() {
     setLoading(true);
     try {
       const statusParam = filter !== "all" ? `?status=${filter}` : "";
-      const res = await fetch(`http://localhost:5000/api/tutors/verifications${statusParam}`, {
+      const res = await apiFetch(`/api/tutors/verifications${statusParam}`, {
         headers: {
           Authorization: localStorage.getItem("token")
         }
@@ -57,7 +58,7 @@ export default function Verifications() {
 
   const handleVerify = async (tutorId, status) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/tutors/verify/${tutorId}`, {
+      const response = await apiFetch(`/api/tutors/verify/${tutorId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -175,7 +176,7 @@ export default function Verifications() {
                     {tutor.cvFile && (
                       <div className="cv-info">
                         <a
-                          href={`http://localhost:5000/api/tutors/download-cv/${tutor._id}`}
+                          href={apiUrl(`/api/tutors/download-cv/${tutor._id}`)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="cv-link"

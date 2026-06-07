@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { io as ioClient } from "socket.io-client";
 import { useAuth } from "@/lib/auth";
+import { apiFetch, API_BASE } from '@/lib/api'
 import { LayoutDashboard, Search, Heart, Calendar, Bell, MessageCircle, Settings, BookOpen, Star, Clock } from "lucide-react";
 import { DashboardShell, StatCard } from "@/components/DashboardShell";
 import { Card } from "@/components/ui/card";
@@ -38,7 +39,7 @@ function StudentDashboard() {
 
     try {
       setBookingLoading(true);
-      const res = await fetch("/api/bookings/student", {
+      const res = await apiFetch('/api/bookings/student', {
         headers: { Authorization: `Bearer ${authToken}` },
       });
       if (!res.ok) {
@@ -85,7 +86,7 @@ function StudentDashboard() {
       }
 
       try {
-        const res = await fetch("http://localhost:5000/api/students/saved-tutors", {
+        const res = await apiFetch('/api/students/saved-tutors', {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (!res.ok) return;
@@ -111,8 +112,7 @@ function StudentDashboard() {
   }, [loadBookings]);
 
   useEffect(() => {
-    const endpoint = import.meta.env.DEV ? "http://localhost:5000" : window.location.origin;
-    const socket = ioClient(endpoint, { transports: ["websocket"] });
+    const socket = ioClient(API_BASE, { transports: ["websocket"] });
     socketRef.current = socket;
 
     const userObj = JSON.parse(localStorage.getItem("user") || "{}") || {};

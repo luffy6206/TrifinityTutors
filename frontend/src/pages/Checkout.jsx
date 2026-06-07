@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Lock } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { apiFetch } from '@/lib/api'
 
 function Checkout() {
   const navigate = useNavigate();
@@ -24,7 +25,7 @@ function Checkout() {
     try {
       const token = localStorage.getItem("token");
 
-      const res = await fetch("/api/bookings/create-order", {
+      const res = await apiFetch('/api/bookings/create-order', {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -59,7 +60,7 @@ function Checkout() {
               paymentSignature: response.razorpay_signature,
             };
 
-            const bookingRes = await fetch('/api/bookings/create', {
+            const bookingRes = await apiFetch('/api/bookings/create', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',

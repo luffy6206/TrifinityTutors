@@ -4,10 +4,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { GraduationCap, Users, Check } from "lucide-react";
 import { GoogleLogin } from "@react-oauth/google";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Label } from "@/components/ui/Label";
 import { useAuth } from "@/lib/auth";
+import { apiFetch } from "@/lib/api";
 
 export const Route = createFileRoute("/auth/signup")({
   component: SignupPage,
@@ -30,7 +31,7 @@ function SignupPage() {
       }
 
       const endpoint = role === "tutor" ? "/api/tutors/google-signup" : "/api/students/google-signup";
-      const response = await fetch(`http://localhost:5000${endpoint}`, {
+      const response = await apiFetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token: credentialResponse.credential }),

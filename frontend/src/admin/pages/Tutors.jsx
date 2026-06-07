@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
+import { apiFetch } from '@/lib/api'
 import "../styles/AdminTutors.css"
 
 export default function Tutors() {
@@ -12,7 +13,7 @@ export default function Tutors() {
 
   const fetchTutors = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/tutors", {
+      const res = await apiFetch('/api/tutors', {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`
         }
@@ -35,7 +36,7 @@ export default function Tutors() {
 
   const updateStatus = async (id, status) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/tutors/${id}/status`, {
+      const response = await apiFetch(`/api/tutors/${id}/status`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -62,7 +63,7 @@ export default function Tutors() {
     if (!window.confirm(`Are you sure you want to delete ${name}?`)) return;
 
     try {
-      const response = await fetch(`http://localhost:5000/api/tutors/${id}`, {
+      const response = await apiFetch(`/api/tutors/${id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

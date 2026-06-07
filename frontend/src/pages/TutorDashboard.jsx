@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { io as ioClient } from "socket.io-client";
 import { LayoutDashboard, Calendar, Users, DollarSign, BarChart3, Settings, MessageCircle, TrendingUp, Eye, Star, Bell } from "lucide-react";
 import { useAuth } from "@/lib/auth";
+import { apiFetch, API_BASE } from '@/lib/api'
 import { DashboardShell, StatCard } from "@/components/DashboardShell";
 import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
@@ -36,7 +37,7 @@ function TutorDashboard() {
         setLoading(false);
         return;
       }
-      const res = await fetch("/api/bookings/tutor", {
+      const res = await apiFetch('/api/bookings/tutor', {
         headers: { Authorization: `Bearer ${authToken}` },
       });
       if (!res.ok) {
@@ -66,8 +67,7 @@ function TutorDashboard() {
   }, [user, navigate]);
 
   useEffect(() => {
-    const endpoint = import.meta.env.DEV ? "http://localhost:5000" : window.location.origin;
-    const socket = ioClient(endpoint, { transports: ["websocket"] });
+    const socket = ioClient(API_BASE, { transports: ["websocket"] });
     socketRef.current = socket;
 
     const user = JSON.parse(localStorage.getItem("user") || "{}") || {};

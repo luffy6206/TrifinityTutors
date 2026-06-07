@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
+import { apiFetch } from '@/lib/api'
 import "../styles/AdminDashboard.css"
 
 export default function Dashboard() {
@@ -13,7 +14,7 @@ export default function Dashboard() {
 
   const fetchCounts = async () => {
     try {
-      const studentRes = await fetch("http://localhost:5000/api/students/count", {
+      const studentRes = await apiFetch('/api/students/count', {
         headers: {
           Authorization: localStorage.getItem("token")
         }
@@ -22,7 +23,7 @@ export default function Dashboard() {
       const studentData = await studentRes.json();
       setStudentCount(studentData.count || 0);
 
-      const tutorRes = await fetch("http://localhost:5000/api/tutors/count", {
+      const tutorRes = await apiFetch('/api/tutors/count', {
         headers: {
           Authorization: localStorage.getItem("token")
         }
